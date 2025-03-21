@@ -158,14 +158,17 @@ export const placeNBAMoneyLineBet: Action = {
             elizaLogger.success(JSON.stringify(data));
             elizaLogger.success(`Successfully placed bet on ${teamName}`);
 
+            const acceptedStake = data.stake;
+            const acceptedPrice = data.price;
+
             const status = data.status;
             if (status === "ACCEPTED" || status === "PENDING_ACCEPTANCE") {
                 // Store bet details in state for local reference
                 state.nbaBetDetails = {
                     eventName,
                     teamName,
-                    stake,
-                    price,
+                    stake: acceptedStake,
+                    price: acceptedPrice,
                     status,
                     timestamp: Date.now(),
                 };
@@ -174,8 +177,8 @@ export const placeNBAMoneyLineBet: Action = {
                 lastBetDetails = {
                     eventName,
                     teamName,
-                    stake,
-                    price,
+                    stake: acceptedStake,
+                    price: acceptedPrice,
                     status,
                     timestamp: Date.now(),
                 };
@@ -183,7 +186,7 @@ export const placeNBAMoneyLineBet: Action = {
                 callback({
                     text:
                         status === "ACCEPTED"
-                            ? `Successfully placed a bet of $${stake} on ${teamName} in the ${eventName} game.`
+                            ? `Successfully placed a bet of $${acceptedStake} on ${teamName} with odds of ${acceptedPrice}.`
                             : `Bet is pending for acceptance with $${stake} on ${teamName} in the ${eventName} game. Waiting for acceptance.`,
                 });
                 return true;
@@ -191,13 +194,13 @@ export const placeNBAMoneyLineBet: Action = {
 
             elizaLogger.error("Error in NBA plugin handler:");
             callback({
-                text: `Sorry. I am unable to place the bet. Please try again later.`,
+                text: `Sorry. I am unable to take the be for you. Please try again later.`,
             });
             return false;
         } catch (error: any) {
             elizaLogger.error("Error in NBA plugin handler:", error);
             callback({
-                text: `Sorry. I am unable to place the bet. Please try again later.`,
+                text: `Sorry. I am unable to take the bet for you. Please try again later.`,
             });
             return false;
         }

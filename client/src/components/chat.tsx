@@ -207,7 +207,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                 >
                                     {message?.user !== "user" ? (
                                         <Avatar className="size-16 p-1 border rounded-full select-none">
-                                            <AvatarImage src="https://res.cloudinary.com/betengine/image/upload/v1742486144/media-cloudbet/download_5_-Photoroom.png" />
+                                            <AvatarImage src="/agent_logo.png" />
                                         </Avatar>
                                     ) : null}
                                     <div className="flex flex-col">
