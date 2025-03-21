@@ -185,8 +185,8 @@ export const generateNBABetSlip: Action = {
             // Generate the image
             const images = await generateImage(
                 {
-                    width: 800,
-                    height: 576,
+                    width: 1600,
+                    height: 1152,
                     prompt: `Create an image of a ${eventName} game with their logos in the background. Add 'wagered $${stake?.toString()} X ${price}' to the very bottom of the image without covering logos.`,
                 },
                 runtime

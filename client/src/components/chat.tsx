@@ -235,7 +235,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                                                 }
                                                                 width="100%"
                                                                 height="100%"
-                                                                className="w-64 rounded-md"
+                                                                className="rounded-md"
                                                             />
                                                             <div className="flex items-center justify-between gap-4">
                                                                 <span></span>
