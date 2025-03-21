@@ -188,6 +188,10 @@ export const generateNBABetSlip: Action = {
                     width: 1600,
                     height: 1152,
                     prompt: `Create an image of a ${eventName} game with their logos in the background. Add 'wagered $${stake?.toString()} X ${price}' to the very bottom of the image without covering logos.`,
+                    negativePrompt: "ugly, blurry, low quality, distorted",
+                    seed: 42,
+                    stylePreset: "anime",
+                    numIterations: 50,
                 },
                 runtime
             );
