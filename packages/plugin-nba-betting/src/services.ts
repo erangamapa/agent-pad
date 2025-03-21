@@ -1,5 +1,6 @@
 import {
     AcceptPriceChange,
+    BetHistoryResponse,
     NBAMoneyLineMarketsResponse,
     PlaceBetOutput,
     Side,
@@ -78,5 +79,27 @@ export const createNBABettingService = (apiKey: string) => {
         }
     };
 
-    return { getNBAMoneyLineMarkets, placeBet };
+    const getBetHistory = async (): Promise<BetHistoryResponse> => {
+        if (!apiKey) {
+            throw new Error("Invalid parameters");
+        }
+
+        try {
+            const url = `${BASE_URL}/pub/v4/bets/history`;
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-API-Key": apiKey,
+                },
+            });
+
+            const data = await response.json();
+            return data as BetHistoryResponse;
+        } catch (error: any) {
+            throw error;
+        }
+    };
+
+    return { getNBAMoneyLineMarkets, placeBet, getBetHistory };
 };

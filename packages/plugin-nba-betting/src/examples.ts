@@ -550,3 +550,66 @@ export const placeNBABetExamples: ActionExample[][] = [
         },
     ],
 ];
+
+export const getBetHistoryExamples: ActionExample[][] = [
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "Can you show me my betting history?",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Here's your betting history:",
+                action: "GET_BET_HISTORY",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "I want to see my recent bets.",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Let me show you your recent bets:",
+                action: "GET_BET_HISTORY",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "What bets have I placed so far?",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Here are the bets you've placed so far:",
+                action: "GET_BET_HISTORY",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "Show me my bet history.",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Here's your bet history:",
+                action: "GET_BET_HISTORY",
+            },
+        },
+    ],
+];

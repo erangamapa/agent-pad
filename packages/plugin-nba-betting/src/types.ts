@@ -110,3 +110,27 @@ export interface Opinions {
 export interface Period {
     outcomes: any[];
 }
+
+export interface BetHistoryResponse {
+    bets: BetDetails[];
+    totalBets: string;
+}
+
+export interface BetDetails {
+    referenceId: string;
+    price: string;
+    eventId: string;
+    marketUrl: string;
+    side: string;
+    currency: string;
+    stake: string;
+    createTime: string;
+    status: string;
+    returnAmount: string;
+    eventName: string;
+    sportsKey: string;
+    competitionId: string;
+    categoryKey: string;
+    customerReference: string;
+    error: string;
+}
