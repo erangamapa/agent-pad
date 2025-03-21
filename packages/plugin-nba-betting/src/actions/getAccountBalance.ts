@@ -50,7 +50,7 @@ export const getAccountBalanceAction: Action = {
             );
 
             callback({
-                text: `Your current account balance is ${formattedBalance} USDT.`,
+                text: `Your current account balance is ${formattedBalance}$.`,
             });
             return true;
         } catch (error: any) {

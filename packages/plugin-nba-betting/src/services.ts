@@ -53,7 +53,7 @@ export const createNBABettingService = (apiKey: string) => {
 
         const payload = {
             acceptPriceChange: AcceptPriceChange.ALL,
-            currency: "MATIC",
+            currency: "USDT",
             eventId,
             marketUrl: `basketball.moneyline/${Side[outcome]}`,
             price,

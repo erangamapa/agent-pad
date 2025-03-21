@@ -168,7 +168,7 @@ export const placeNBAMoneyLineBet: Action = {
                     eventName,
                     teamName,
                     stake: acceptedStake,
-                    price: acceptedPrice,
+                    price: parseFloat(acceptedPrice).toFixed(2),
                     status,
                     timestamp: Date.now(),
                 };
@@ -178,7 +178,7 @@ export const placeNBAMoneyLineBet: Action = {
                     eventName,
                     teamName,
                     stake: acceptedStake,
-                    price: acceptedPrice,
+                    price: parseFloat(acceptedPrice).toFixed(2),
                     status,
                     timestamp: Date.now(),
                 };
@@ -186,7 +186,7 @@ export const placeNBAMoneyLineBet: Action = {
                 callback({
                     text:
                         status === "ACCEPTED"
-                            ? `Successfully placed a bet of $${acceptedStake} on ${teamName} with odds of ${acceptedPrice}.`
+                            ? `Successfully placed a bet of $${acceptedStake} on ${teamName} with odds of ${parseFloat(acceptedPrice).toFixed(2)}.`
                             : `Bet is pending for acceptance with $${stake} on ${teamName} in the ${eventName} game. Waiting for acceptance.`,
                 });
                 return true;
@@ -194,7 +194,7 @@ export const placeNBAMoneyLineBet: Action = {
 
             elizaLogger.error("Error in NBA plugin handler:");
             callback({
-                text: `Sorry. I am unable to take the be for you. Please try again later.`,
+                text: `Sorry. I am unable to take the bet for you. Please try again later.`,
             });
             return false;
         } catch (error: any) {

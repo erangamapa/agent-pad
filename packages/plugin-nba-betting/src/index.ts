@@ -13,7 +13,6 @@ export const nbaBetting: Plugin = {
         placeNBAMoneyLineBet,
         generateNBABetSlip,
         getBetHistoryAction,
-        getAccountBalanceAction,
     ],
     // evaluators analyze the situations and actions taken by the agent. they run after each agent action
     // allowing the agent to reflect on what happened and potentially trigger additional actions or modifications
