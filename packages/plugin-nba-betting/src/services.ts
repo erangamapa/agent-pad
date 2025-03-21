@@ -1,5 +1,6 @@
 import {
     AcceptPriceChange,
+    AccountBalanceResponse,
     BetHistoryResponse,
     NBAMoneyLineMarketsResponse,
     PlaceBetOutput,
@@ -101,5 +102,32 @@ export const createNBABettingService = (apiKey: string) => {
         }
     };
 
-    return { getNBAMoneyLineMarkets, placeBet, getBetHistory };
+    const getAccountBalance = async (): Promise<AccountBalanceResponse> => {
+        if (!apiKey) {
+            throw new Error("Invalid parameters");
+        }
+
+        try {
+            const url = `${BASE_URL}/pub/v1/account/currencies/USDT/balance`;
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-API-Key": apiKey,
+                },
+            });
+
+            const data = await response.json();
+            return data as AccountBalanceResponse;
+        } catch (error: any) {
+            throw error;
+        }
+    };
+
+    return {
+        getNBAMoneyLineMarkets,
+        placeBet,
+        getBetHistory,
+        getAccountBalance,
+    };
 };

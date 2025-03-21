@@ -134,3 +134,7 @@ export interface BetDetails {
     customerReference: string;
     error: string;
 }
+
+export interface AccountBalanceResponse {
+    amount: string;
+}

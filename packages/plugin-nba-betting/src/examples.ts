@@ -613,3 +613,81 @@ export const getBetHistoryExamples: ActionExample[][] = [
         },
     ],
 ];
+
+export const getAccountBalanceExamples: ActionExample[][] = [
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "What's my account balance?",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Your current account balance is:",
+                action: "GET_ACCOUNT_BALANCE",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "How much money do I have in my account?",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Here is your current account balance:",
+                action: "GET_ACCOUNT_BALANCE",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "Show me my available balance.",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Your available balance is:",
+                action: "GET_ACCOUNT_BALANCE",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "Check my account balance please.",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Let me check your account balance:",
+                action: "GET_ACCOUNT_BALANCE",
+            },
+        },
+    ],
+    [
+        {
+            user: "{{user1}}",
+            content: {
+                text: "How much USDT do I have in my account?",
+            },
+        },
+        {
+            user: "{{agent}}",
+            content: {
+                text: "Your USDT balance is:",
+                action: "GET_ACCOUNT_BALANCE",
+            },
+        },
+    ],
+];

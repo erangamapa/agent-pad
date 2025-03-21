@@ -3,6 +3,7 @@ import { getNBAMoneyLineMarketsAction } from "./actions/getNBAMoneyLineMarkets";
 import { placeNBAMoneyLineBet } from "./actions/placeNBAMoneyLineBet";
 import { generateNBABetSlip } from "./actions/generateNBABetSlip";
 import { getBetHistoryAction } from "./actions/getBetHistory";
+import { getAccountBalanceAction } from "./actions/getAccountBalance";
 
 export const nbaBetting: Plugin = {
     name: "nba betting",
@@ -12,6 +13,7 @@ export const nbaBetting: Plugin = {
         placeNBAMoneyLineBet,
         generateNBABetSlip,
         getBetHistoryAction,
+        getAccountBalanceAction,
     ],
     // evaluators analyze the situations and actions taken by the agent. they run after each agent action
     // allowing the agent to reflect on what happened and potentially trigger additional actions or modifications
