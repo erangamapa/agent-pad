@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Cog, X } from "lucide-react";
+import { Cog } from "lucide-react";
 import PageTitle from "@/components/page-title";
 import { Button } from "@/components/ui/button";
 import {
