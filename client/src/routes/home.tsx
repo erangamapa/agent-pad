@@ -35,7 +35,7 @@ export default function Home() {
                             <div className="rounded-md bg-muted aspect-square w-full grid place-items-center">
                                 <div className="text-6xl font-bold uppercase">
                                     <img
-                                        src="https://res.cloudinary.com/betengine/image/upload/v1742486144/media-cloudbet/download_5_-Photoroom.png"
+                                        src="/agent_logo.png"
                                         alt={agent?.name}
                                         className="rounded-md"
                                     />

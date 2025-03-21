@@ -42,6 +42,31 @@ export default function Page({ agentId }: { agentId: UUID }) {
 
     const queryClient = useQueryClient();
 
+    // Change background when chat component mounts
+    useEffect(() => {
+        // Store original background image
+        const originalBodyStyle = document.body.style.cssText;
+
+        // Add a specific class for the chat view
+        document.body.classList.add("chat-view");
+
+        // Create a style element to override the background image
+        const styleElement = document.createElement("style");
+        styleElement.textContent = `
+            body::before {
+                background-image: url("/banner.jpeg") !important;
+            }
+        `;
+        document.head.appendChild(styleElement);
+
+        // Cleanup when component unmounts
+        return () => {
+            document.body.classList.remove("chat-view");
+            document.body.style.cssText = originalBodyStyle;
+            styleElement.remove();
+        };
+    }, []);
+
     const getMessageVariant = (role: string) =>
         role !== "user" ? "received" : "sent";
 
@@ -171,7 +196,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     {transitions((styles, message) => {
                         const variant = getMessageVariant(message?.user);
                         return (
-                            // @ts-expect-error
+                            // @ts-expect-error - animated.div has dynamic props from the transitions
                             <animated.div
                                 style={styles}
                                 className="flex flex-col gap-2 p-4"
