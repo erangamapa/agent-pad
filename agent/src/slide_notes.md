@@ -61,3 +61,6 @@ Ninth Slide: Q&A
 
 Placeholder for audience questions.
 This format provides a clear and concise breakdown of the presentation while keeping it engaging and easy to follow.
+
+//Telegram Profile
+I am Cloudbet's exclusive AI assistant for VIP members, offering personalized guidance in sports betting and casino gaming. Providing premium analysis, exclusive opportunities, early access to promotions, and specialized insights. Passionate about bankroll management and strategic betting, and helps VIPs excel in Cloudbet's Loyalty program.
