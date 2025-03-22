@@ -1,4 +1,63 @@
-Slides Notes
-Name is Cloudlet AI verse and its a platform for Cloudlet to Launch AI agents. To Showcase first agent Agent Hoopz was launched who is specialised in NBA betting analysis, Billposting in Twitter as well as taking bets for players. Second agent is called Agent High Roller host specialised in Hosting Cloudbet VIPs, providing personalised guidance. Next should explain other possibilities such as how this platform can roll out different agent based on different purposes such as Rolling out and agent targeting IPL who is trained on famous cricket commentators data or some other agents based different use case, promo for certain competitions
-Finally explain that agents are the future and for lot of regular tasks such as ordering food, buying products online, booking holidays or even buying crypto, people will be talking to agents by text input or voice instead of interacting clicking through multiple apps or websites
-Then explains whats next for this project. Would be to setup MCP and having the ability to keep the model upto date with cloudbet odds and markets as well as the offers, promos and T & C. Finally mention that in this project I have not covered the regulatory and compliance concerns specially functions like giving the ability to openly bet on twitter. Also i have not covered the security and the data security part. Instead my main intention as well as this Hackathon's intention is to show the possibilities of AI for cloudlet and the gambling industry how we can adopt to potential production ready projects.
+First Slide: Cloudlet AI Verse Overview
+
+Cloudlet AI Verse is a platform for launching AI-powered agents.
+Focused on enhancing Cloudbet's capabilities with intelligent automation.
+Second Slide: Bootstrap Agents
+
+Agent Hoopz:
+Specializes in NBA betting analysis.
+Posts insights on Twitter.
+Takes bets for players.
+Agent High Roller:
+Hosts Cloudbet VIPs online.
+Provides personalized guidance and support.
+Third Slide: Demo
+
+Placeholder for showcasing a live demo or screenshots of the platform.
+Fourth Slide: Built with Technologies
+
+Adopted Eliza OS for Cloudlet AI Verse:
+Modified core for image generation and rendering.
+Configured models for:
+Conversation.
+Image generation.
+Connected APIs:
+Twitter API.
+Telegram API.
+Built plugins for:
+Betting.
+Cloudbet T&Cs, offers, and promos.
+Set up actions with plugins and training data for prompts.
+Fifth Slide: Workflow Diagram
+
+Steps in the workflow:
+Client receives and normalizes input.
+Runtime builds context from character data and memories.
+System detects special commands or media.
+Providers add contextual information.
+AI generates a character-appropriate response.
+System extracts and stores new information.
+Required actions are executed.
+Response is delivered to the user.
+Sixth Slide: Future Possibilities
+
+Roll out agents for different purposes:
+Example: IPL agent trained on cricket commentators' opinions from Twitter or ESPN.
+Launch agents for specific sports seasons.
+Seventh Slide: Advancements
+
+Next steps:
+Implement sign-in/sign-up features.
+Manage wallets and transactions.
+Train advanced models with MCP.
+Keep models updated with Cloudbet odds, markets, offers, and promos.
+Eighth Slide: Limitations
+
+Regulatory and compliance concerns not covered:
+Example: Open betting on Twitter.
+Security and data protection not addressed.
+Focused on showcasing AI possibilities for Cloudlet and the gambling industry.
+Ninth Slide: Q&A
+
+Placeholder for audience questions.
+This format provides a clear and concise breakdown of the presentation while keeping it engaging and easy to follow.
