@@ -35,7 +35,11 @@ export default function Home() {
                             <div className="rounded-md bg-muted aspect-square w-full grid place-items-center">
                                 <div className="text-6xl font-bold uppercase">
                                     <img
-                                        src="/agent_logo.png"
+                                        src={
+                                            agent?.name === "Agent Hoopz"
+                                                ? "/agent_logo.png"
+                                                : "agent_logo_2.webp"
+                                        }
                                         alt={agent?.name}
                                         className="rounded-md"
                                     />
@@ -45,7 +49,7 @@ export default function Home() {
                         <CardFooter>
                             <div className="flex items-center gap-4 w-full">
                                 <NavLink
-                                    to={`/chat/${agent.id}`}
+                                    to={`/chat/${agent.id}?name=${agent.name}`}
                                     className="w-full grow"
                                 >
                                     <Button className="w-full grow btn-purple">

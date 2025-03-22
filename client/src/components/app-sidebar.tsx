@@ -74,7 +74,7 @@ export function AppSidebar() {
                                         (agent: { id: UUID; name: string }) => (
                                             <SidebarMenuItem key={agent.id}>
                                                 <NavLink
-                                                    to={`/chat/${agent.id}`}
+                                                    to={`/chat/${agent.id}?name=${agent.name}`}
                                                 >
                                                     <SidebarMenuButton
                                                         isActive={location.pathname.includes(

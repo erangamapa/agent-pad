@@ -5,7 +5,7 @@ import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
 export const mainCharacter = {
     name: "Agent Hoopz",
     clients: [Clients.TWITTER],
-    modelProvider: ModelProviderName.HYPERBOLIC,
+    modelProvider: ModelProviderName.OPENROUTER,
     imageModelProvider: ModelProviderName.TOGETHER,
     plugins: [imageGenerationPlugin, nbaBetting],
     settings: {

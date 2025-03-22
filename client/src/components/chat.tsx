@@ -22,6 +22,7 @@ import AIWriter from "react-aiwriter";
 import { IAttachment } from "@/types";
 import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
+import { useSearchParams } from "react-router-dom";
 
 interface ExtraContentFields {
     user: string;
@@ -33,6 +34,8 @@ type ContentWithUser = Content & ExtraContentFields;
 
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
+    const [searchParams] = useSearchParams();
+    const name = searchParams.get("name");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [input, setInput] = useState("");
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +57,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
         const styleElement = document.createElement("style");
         styleElement.textContent = `
             body::before {
-                background-image: url("/banner.jpeg") !important;
+                background-image: url("${name === "Agent Hoopz" ? "/banner.jpeg" : "/banner_2.webp"}") !important;
             }
         `;
         document.head.appendChild(styleElement);
@@ -65,7 +68,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
             document.body.style.cssText = originalBodyStyle;
             styleElement.remove();
         };
-    }, []);
+    }, [name]);
 
     const getMessageVariant = (role: string) =>
         role !== "user" ? "received" : "sent";
@@ -207,7 +210,13 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                 >
                                     {message?.user !== "user" ? (
                                         <Avatar className="size-16 p-1 border rounded-full select-none">
-                                            <AvatarImage src="/agent_logo.png" />
+                                            <AvatarImage
+                                                src={
+                                                    name === "Agent Hoopz"
+                                                        ? "/agent_logo.png"
+                                                        : "/agent_logo_2.webp"
+                                                }
+                                            />
                                         </Avatar>
                                     ) : null}
                                     <div className="flex flex-col">
@@ -324,7 +333,11 @@ export default function Page({ agentId }: { agentId: UUID }) {
                         onKeyDown={handleKeyDown}
                         value={input}
                         onChange={({ target }) => setInput(target.value)}
-                        placeholder="Type your message here..."
+                        placeholder={
+                            name
+                                ? `Type your message to ${name}...`
+                                : "Type your message here..."
+                        }
                         className="min-h-12 resize-none rounded-md bg-card border-0 p-3 shadow-none focus-visible:ring-0"
                     />
                     <div className="flex items-center p-3 pt-0">
