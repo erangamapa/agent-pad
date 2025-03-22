@@ -1,3 +1,4 @@
+// High-roller host character config for Cloudbet VIPs
 import { ModelProviderName, Clients } from "@elizaos/core";
 import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
 
