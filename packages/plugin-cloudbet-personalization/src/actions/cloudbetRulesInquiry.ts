@@ -103,9 +103,81 @@ export const cloudbetRulesInquiryAction: Action = {
                 conversationContext
             );
 
+            // Post-process the response to ensure it doesn't contain follow-up questions
+            let finalResponse = response;
+
+            // Define patterns for questions and invitation phrases
+            const questionPatterns = [
+                /\?/g, // Any question mark
+                /Would you like to know more\b/gi, // "Would you like to know more"
+                /Can I help you with anything else\b/gi, // "Can I help you with anything else"
+                /Do you have any other questions\b/gi, // "Do you have any other questions"
+                /Is there anything else\b/gi, // "Is there anything else"
+                /Let me know if\b/gi, // "Let me know if"
+                /Feel free to ask\b/gi, // "Feel free to ask"
+                /For more information\b/gi, // "For more information"
+                /If you need further details\b/gi, // "If you need further details"
+                /contact support\b/gi, // Mentions of contacting support
+                /contact Cloudbet\b/gi, // Mentions of contacting Cloudbet
+                /please reach out\b/gi, // "please reach out"
+                /don't hesitate to\b/gi, // "don't hesitate to"
+                /I'd be happy to\b/gi, // "I'd be happy to"
+                /I would be happy to\b/gi, // "I would be happy to"
+                /please let me know\b/gi, // "please let me know"
+                /hope this helps\b/gi, // "hope this helps"
+                /hope that helps\b/gi, // "hope that helps"
+                /Any other\b.*\?/gi, // "Any other..." followed eventually by question mark
+                /Would you like\b/gi, // "Would you like"
+                /Do you want\b/gi, // "Do you want"
+                /Can I assist\b/gi, // "Can I assist"
+                /Can I provide\b/gi, // "Can I provide"
+                /May I help\b/gi, // "May I help"
+                /Should you have\b/gi, // "Should you have"
+                /\bplease\b/gi, // "please" as a standalone word
+            ];
+
+            // First, check for and remove any sentences with questions
+            const sentences = finalResponse.split(/(?<=[.!])\s+/);
+            const filteredSentences = sentences.filter((sentence) => {
+                return !questionPatterns.some((pattern) =>
+                    pattern.test(sentence)
+                );
+            });
+
+            // Join the filtered sentences
+            finalResponse = filteredSentences.join(" ");
+
+            // If we've filtered too much, restore the original response but remove question marks
+            if (
+                finalResponse.trim().length < 10 ||
+                !finalResponse.includes(
+                    "Based on Cloudbet's terms and conditions:"
+                )
+            ) {
+                // Just remove question marks and common question phrases instead
+                finalResponse = response;
+                questionPatterns.forEach((pattern) => {
+                    finalResponse = finalResponse.replace(pattern, "");
+                });
+
+                // Remove any double spaces created by replacements
+                finalResponse = finalResponse.replace(/\s+/g, " ").trim();
+            }
+
+            // Make sure we still have our required prefix
+            if (
+                !finalResponse.includes(
+                    "Based on Cloudbet's terms and conditions:"
+                )
+            ) {
+                finalResponse =
+                    "Based on Cloudbet's terms and conditions: " +
+                    finalResponse;
+            }
+
             // Format and send the response
             callback({
-                text: response,
+                text: finalResponse,
             });
 
             return true;
