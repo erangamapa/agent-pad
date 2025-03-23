@@ -93,6 +93,7 @@
         "@elizaos/plugin-web-search": "workspace:*",
         "@elizaos/plugin-zksync-era": "workspace:*",
         "@elizaos/plugin-nba-betting": "workspace:*",
+        "@elizaos/plugin-cloudbet-personalization": "workspace:*",
         "readline": "1.3.0",
         "ws": "8.18.0",
         "yargs": "17.7.2"

@@ -1,13 +1,14 @@
 // High-roller host character config for Cloudbet VIPs
 import { ModelProviderName, Clients } from "@elizaos/core";
 import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
+import { cloudbetPersonalization } from "@elizaos/plugin-cloudbet-personalization";
 
 export const mainCharacter = {
     name: "Agent High-roller host",
     clients: [Clients.TELEGRAM],
     modelProvider: ModelProviderName.OPENROUTER,
     imageModelProvider: ModelProviderName.TOGETHER,
-    plugins: [imageGenerationPlugin],
+    plugins: [imageGenerationPlugin, cloudbetPersonalization],
     settings: {
         voice: {
             model: "en_US-john-medium",
