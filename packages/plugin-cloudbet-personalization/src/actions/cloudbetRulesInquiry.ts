@@ -103,76 +103,49 @@ export const cloudbetRulesInquiryAction: Action = {
                 conversationContext
             );
 
-            // Post-process the response to ensure it doesn't contain follow-up questions
+            // Post-process the response to ensure it's brief and factual
             let finalResponse = response;
 
-            // Define patterns for questions and invitation phrases
-            const questionPatterns = [
+            // Define patterns for questions and friendly language
+            const unwantedPatterns = [
                 /\?/g, // Any question mark
-                /Would you like to know more\b/gi, // "Would you like to know more"
-                /Can I help you with anything else\b/gi, // "Can I help you with anything else"
-                /Do you have any other questions\b/gi, // "Do you have any other questions"
-                /Is there anything else\b/gi, // "Is there anything else"
-                /Let me know if\b/gi, // "Let me know if"
-                /Feel free to ask\b/gi, // "Feel free to ask"
-                /For more information\b/gi, // "For more information"
-                /If you need further details\b/gi, // "If you need further details"
-                /contact support\b/gi, // Mentions of contacting support
-                /contact Cloudbet\b/gi, // Mentions of contacting Cloudbet
-                /please reach out\b/gi, // "please reach out"
-                /don't hesitate to\b/gi, // "don't hesitate to"
-                /I'd be happy to\b/gi, // "I'd be happy to"
-                /I would be happy to\b/gi, // "I would be happy to"
-                /please let me know\b/gi, // "please let me know"
-                /hope this helps\b/gi, // "hope this helps"
-                /hope that helps\b/gi, // "hope that helps"
-                /Any other\b.*\?/gi, // "Any other..." followed eventually by question mark
-                /Would you like\b/gi, // "Would you like"
-                /Do you want\b/gi, // "Do you want"
-                /Can I assist\b/gi, // "Can I assist"
-                /Can I provide\b/gi, // "Can I provide"
-                /May I help\b/gi, // "May I help"
-                /Should you have\b/gi, // "Should you have"
-                /\bplease\b/gi, // "please" as a standalone word
+                /Would you like\b|Can I\b|Do you\b|Is there\b|Let me know\b|Feel free\b/gi, // Questions/offers
+                /\bplease\b|\bhope\b|\bglad\b|\bhappy\b|\bhelp(ful)?\b|\bassist\b/gi, // Friendly language
+                /for more information|further details|reach out|don't hesitate|contact support/gi, // Engagement
+                /I would|I will|I can|I'd|I'm|I am|we|our/gi, // First person language
+                /thank|thanks|helpful|assist|support|provide/gi, // Service language
+                /additionally|moreover|furthermore|also|too|as well/gi, // Connective terms that add length
             ];
 
-            // First, check for and remove any sentences with questions
-            const sentences = finalResponse.split(/(?<=[.!])\s+/);
-            const filteredSentences = sentences.filter((sentence) => {
-                return !questionPatterns.some((pattern) =>
-                    pattern.test(sentence)
-                );
+            // Remove unwanted phrases and patterns
+            unwantedPatterns.forEach((pattern) => {
+                finalResponse = finalResponse.replace(pattern, "");
             });
 
-            // Join the filtered sentences
-            finalResponse = filteredSentences.join(" ");
-
-            // If we've filtered too much, restore the original response but remove question marks
-            if (
-                finalResponse.trim().length < 10 ||
-                !finalResponse.includes(
-                    "Based on Cloudbet's terms and conditions:"
-                )
-            ) {
-                // Just remove question marks and common question phrases instead
-                finalResponse = response;
-                questionPatterns.forEach((pattern) => {
-                    finalResponse = finalResponse.replace(pattern, "");
-                });
-
-                // Remove any double spaces created by replacements
-                finalResponse = finalResponse.replace(/\s+/g, " ").trim();
+            // Ensure the response starts with our required prefix
+            const prefix = ":";
+            if (!finalResponse.includes(prefix)) {
+                finalResponse = prefix + " " + finalResponse.trim();
+            } else {
+                // Extract just the part after the prefix
+                const parts = finalResponse.split(prefix);
+                if (parts.length > 1) {
+                    finalResponse = prefix + parts[1].trim();
+                }
             }
 
-            // Make sure we still have our required prefix
-            if (
-                !finalResponse.includes(
-                    "Based on Cloudbet's terms and conditions:"
-                )
-            ) {
-                finalResponse =
-                    "Based on Cloudbet's terms and conditions: " +
-                    finalResponse;
+            // Remove double spaces and clean up
+            finalResponse = finalResponse.replace(/\s+/g, " ").trim();
+
+            // Limit to two sentences maximum
+            const sentences = finalResponse.split(/(?<=[.!])\s+/);
+            if (sentences.length > 2) {
+                finalResponse = sentences.slice(0, 2).join(" ");
+            }
+
+            // If we've stripped too much, provide a minimal response
+            if (finalResponse.length <= prefix.length + 5) {
+                finalResponse = `${prefix} This information is not in the reference material.`;
             }
 
             // Format and send the response
@@ -279,7 +252,7 @@ export const cloudbetRulesInquiryAction: Action = {
             {
                 user: "{{agent}}",
                 content: {
-                    text: "Based on Cloudbet's terms and conditions, withdrawals are processed within 24 hours, subject to verification procedures. The minimum withdrawal amount is 0.001 BTC or equivalent in other cryptocurrencies. There are no maximum withdrawal limits for verified accounts.",
+                    text: ", withdrawals are processed within 24 hours, subject to verification procedures. The minimum withdrawal amount is 0.001 BTC or equivalent in other cryptocurrencies. There are no maximum withdrawal limits for verified accounts.",
                     action: "CLOUDBET_RULES_INQUIRY",
                 },
             },

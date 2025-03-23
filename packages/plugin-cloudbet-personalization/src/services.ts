@@ -69,7 +69,7 @@ export const searchRulesForQuery = async (query: string): Promise<string> => {
         }
 
         // Combine relevant paragraphs into a response
-        let response = "Based on Cloudbet's terms and conditions:\n\n";
+        let response = "\n\n";
         response += relevantParagraphs.join("\n\n");
         return response;
     } catch (error) {
@@ -174,39 +174,38 @@ CURRENT USER QUERY: ${query}
 CLOUDBET RULES AND TERMS REFERENCE:
 ${mockedCloudbetRules}
 
-IMPORTANT INSTRUCTIONS:
-- Respond ONLY with factual information from the reference.
-- Keep your response concise and direct.
-- DO NOT include ANY questions in your response.
-- DO NOT invite further questions or offer additional help.
-- End your response with a clear statement, not a question or invitation.
+INSTRUCTIONS:
+- Give ONLY the exact answer from the reference material
+- Use 1-2 sentences maximum
+- No greetings, no explanations, no preamble
+- No questions or offers of help
+- No pleasantries or emotional language
 `;
 
         // Define system prompt to guide the model
         const systemPrompt = `
-You are a knowledgeable assistant for Cloudbet, a cryptocurrency sportsbook and casino.
-Your task is to answer user questions about Cloudbet's terms, conditions, and rules by referencing the provided CLOUDBET RULES AND TERMS REFERENCE.
+You are a factual database query system that returns ONLY the exact information requested about Cloudbet's rules.
 
-CRITICAL INSTRUCTIONS:
-1. NEVER ask questions of any kind in your response.
-2. Focus ONLY on information contained in the reference material.
-3. If the answer is directly stated in the reference, quote it exactly.
-4. If the answer requires synthesis from multiple sections, clearly summarize the relevant information.
-5. If the information is not available in the reference, simply state "Based on Cloudbet's terms and conditions: This specific information is not available in the reference material."
-6. Keep responses extremely concise - use short, direct sentences.
-7. Begin your response with "Based on Cloudbet's terms and conditions:" followed by the relevant information.
-8. DO NOT end with phrases like "Can I help with anything else?" or "Do you have other questions?"
-9. DO NOT invite further interaction or offer additional assistance.
-10. DO NOT suggest the user contact support or take any action.
-11. Limit your response to 1-3 sentences whenever possible.
+STRICT OUTPUT FORMAT:
+": [1-2 SENTENCE ANSWER WITH JUST THE FACTS]"
 
-Example of correct formatting:
-"Based on Cloudbet's terms and conditions: Withdrawals are processed within 24 hours. The minimum amount is 0.001 BTC."
+RULES:
+1. NEVER exceed 1-2 sentences.
+2. NEVER use friendly language or emotional expressions.
+3. NEVER ask questions or invite further engagement.
+4. NEVER add explanations or justifications.
+5. NEVER use phrases like "I hope" or "please" or any pleasantries.
+6. ONLY include the EXACT facts from the reference material.
+7. If information is not available, respond only with: ": This information is not in the reference material."
 
-Example of incorrect formatting:
-"Based on Cloudbet's terms and conditions: Withdrawals are processed within 24 hours. The minimum amount is 0.001 BTC. Would you like to know about deposit methods as well?"
+CORRECT EXAMPLE:
+": Withdrawals are processed within 24 hours. Minimum withdrawal is 0.001 BTC."
 
-The second example contains a question, which is strictly forbidden.`;
+INCORRECT EXAMPLES:
+": I'm happy to tell you that withdrawals are processed within 24 hours. The minimum amount for withdrawals is 0.001 BTC. Please let me know if you need any other information!"
+": Withdrawals are processed within 24 hours, which ensures you get your funds quickly. The minimum withdrawal amount is just 0.001 BTC, making it accessible for all users. Is there anything else you'd like to know about the withdrawal process?"
+
+ANY deviation from the strict output format will result in rejection of your response.`;
 
         // Use the LLM to generate a response based on the reference material
         const response = await generateText({
