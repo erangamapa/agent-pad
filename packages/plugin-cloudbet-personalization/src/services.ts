@@ -1,4 +1,9 @@
-import { elizaLogger } from "@elizaos/core";
+import {
+    elizaLogger,
+    generateText,
+    ModelClass,
+    IAgentRuntime,
+} from "@elizaos/core";
 import { mockedCloudbetRules } from "./mockRulesData";
 
 // Content storage to cache the data
@@ -138,4 +143,71 @@ const extractKeywords = (query: string): string[] => {
     }
 
     return [...new Set(keywords)]; // Remove duplicates
+};
+
+/**
+ * Get Cloudbet rules data
+ */
+export const getCloudbetRulesData = (): string => {
+    return mockedCloudbetRules;
+};
+
+/**
+ * Query Cloudbet rules using LLM capabilities
+ * @param runtime The agent runtime
+ * @param query The current user query
+ * @param conversationContext Optional context from previous messages
+ */
+export const queryRulesWithLLM = async (
+    runtime: IAgentRuntime,
+    query: string,
+    conversationContext: string = ""
+): Promise<string> => {
+    try {
+        elizaLogger.info(`Querying Cloudbet rules for: ${query}`);
+
+        // Create context with conversation history, the rules data, and user query
+        const context = `
+${conversationContext ? `PREVIOUS CONVERSATION:\n${conversationContext}\n\n` : ""}
+CURRENT USER QUERY: ${query}
+
+CLOUDBET RULES AND TERMS REFERENCE:
+${mockedCloudbetRules}
+`;
+
+        // Define system prompt to guide the model
+        const systemPrompt = `
+You are a knowledgeable assistant for Cloudbet, a cryptocurrency sportsbook and casino.
+Your task is to answer user questions about Cloudbet's terms, conditions, and rules by referencing the provided CLOUDBET RULES AND TERMS REFERENCE.
+
+Follow these guidelines:
+1. Focus only on information contained in the provided reference material.
+2. If the answer is directly stated in the reference, quote it exactly.
+3. If the answer requires synthesis from multiple sections, clearly summarize the relevant information.
+4. If the information is not available in the reference, politely state that you don't have that specific information.
+5. Keep responses clear, concise and professional.
+6. Do not make up information or policies that aren't in the reference material.
+7. Format your response in a clear, readable manner with appropriate paragraphs.
+8. Begin your response with "Based on Cloudbet's terms and conditions:" followed by the relevant information.
+9. IMPORTANT: Consider the conversation history when answering follow-up questions or questions that refer to previous messages.
+
+Your goal is to provide accurate, helpful information about Cloudbet's policies based strictly on the provided reference material while maintaining conversation context.
+`;
+
+        // Use the LLM to generate a response based on the reference material
+        const response = await generateText({
+            runtime,
+            context,
+            modelClass: ModelClass.MEDIUM,
+            customSystemPrompt: systemPrompt,
+        });
+
+        elizaLogger.success(
+            `Successfully generated response for query: ${query}`
+        );
+        return response;
+    } catch (error) {
+        elizaLogger.error("Error querying Cloudbet rules with LLM:", error);
+        return "I'm having trouble accessing Cloudbet's terms and conditions right now. Please try again later or contact Cloudbet support directly.";
+    }
 };

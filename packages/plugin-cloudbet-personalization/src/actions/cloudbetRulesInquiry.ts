@@ -7,7 +7,60 @@ import {
     Memory,
     State,
 } from "@elizaos/core";
-import { searchRulesForQuery } from "../services";
+import { queryRulesWithLLM } from "../services";
+
+/**
+ * Gather conversation context from recent messages
+ */
+const getConversationContext = (
+    runtime: IAgentRuntime,
+    currentQuery: string
+): string => {
+    let context = "";
+
+    try {
+        // Attempt to get previous messages from runtime context or state
+        // This is a simplified approach that depends on the specific runtime implementation
+
+        // For demonstration, we'll check if the currentQuery appears to be a follow-up question
+        const followUpIndicators = [
+            "what about",
+            "how about",
+            "and what",
+            "also tell me",
+            "follow up",
+            "in addition",
+            "furthermore",
+            "moreover",
+            "then",
+            "also",
+            "too",
+            "as well",
+            "?",
+            "additionally",
+            "can you explain",
+            "tell me more",
+            "elaborate",
+        ];
+
+        const isLikelyFollowUp = followUpIndicators.some((indicator) =>
+            currentQuery.toLowerCase().includes(indicator.toLowerCase())
+        );
+
+        if (isLikelyFollowUp) {
+            // For demonstration purposes, we'll add a note that this seems to be a follow-up
+            context =
+                "Note: This appears to be a follow-up question. Consider previous context when answering.";
+        }
+
+        // In a real implementation, we would extract actual conversation history here
+        // from runtime.getState() or similar methods, depending on the runtime API
+    } catch (error) {
+        elizaLogger.warn("Error gathering conversation context:", error);
+    }
+
+    return context;
+};
 
 export const cloudbetRulesInquiryAction: Action = {
     name: "CLOUDBET_RULES_INQUIRY",
@@ -19,7 +72,7 @@ export const cloudbetRulesInquiryAction: Action = {
         return true;
     },
     handler: async (
-        _runtime: IAgentRuntime,
+        runtime: IAgentRuntime,
         message: Memory,
         _state: State,
         _options: { [key: string]: unknown },
@@ -36,10 +89,19 @@ export const cloudbetRulesInquiryAction: Action = {
                 return true;
             }
 
-            elizaLogger.info(`Searching Cloudbet rules for: ${query}`);
+            elizaLogger.info(
+                `Processing inquiry about Cloudbet rules: ${query}`
+            );
 
-            // Search for relevant information
-            const response = await searchRulesForQuery(query);
+            // Get conversation context to help with follow-up questions
+            const conversationContext = getConversationContext(runtime, query);
+
+            // Use LLM to generate a response based on user query, conversation context, and Cloudbet rules
+            const response = await queryRulesWithLLM(
+                runtime,
+                query,
+                conversationContext
+            );
 
             // Format and send the response
             callback({
@@ -130,6 +192,35 @@ export const cloudbetRulesInquiryAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "Let me search Cloudbet's terms and conditions regarding casino games.",
+                    action: "CLOUDBET_RULES_INQUIRY",
+                },
+            },
+        ],
+        // Add example of follow-up question
+        [
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "What are the withdrawal limits on Cloudbet?",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Based on Cloudbet's terms and conditions, withdrawals are processed within 24 hours, subject to verification procedures. The minimum withdrawal amount is 0.001 BTC or equivalent in other cryptocurrencies. There are no maximum withdrawal limits for verified accounts.",
+                    action: "CLOUDBET_RULES_INQUIRY",
+                },
+            },
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "And what about verification requirements?",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Let me check about the verification requirements.",
                     action: "CLOUDBET_RULES_INQUIRY",
                 },
             },
