@@ -64,24 +64,57 @@ export default function Home() {
                                         <Cog />
                                     </Button>
                                 </NavLink>
-                                <a
-                                    href="https://x.com/AgentHoopz"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <Button size="icon" className="btn-purple">
-                                        <svg
-                                            viewBox="0 0 24 24"
-                                            aria-hidden="true"
-                                            fill="white"
-                                            className="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-lrsllp r-1nao33i r-16y2uox r-8kz0gk"
+                                {agent?.name === "Agent Hoopz" && (
+                                    <a
+                                        href="https://x.com/AgentHoopz"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            size="icon"
+                                            className="btn-purple"
                                         >
-                                            <g>
-                                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-                                            </g>
-                                        </svg>
-                                    </Button>
-                                </a>
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                                fill="white"
+                                                className="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-lrsllp r-1nao33i r-16y2uox r-8kz0gk"
+                                            >
+                                                <g>
+                                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                                                </g>
+                                            </svg>
+                                        </Button>
+                                    </a>
+                                )}
+                                {agent?.name === "Agent High-roller host" && (
+                                    <a
+                                        href="https://t.me/cbhighrollerbot"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button
+                                            size="icon"
+                                            className="btn-purple"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 2400 2400"
+                                            >
+                                                <circle
+                                                    cx="1200"
+                                                    cy="1200"
+                                                    r="1200"
+                                                    fill="#0088cc"
+                                                />
+                                                <path
+                                                    d="M1800 600L600 1050l300 150 900-600-750 750 0 300 150 0 150-150 300 150 150-750z"
+                                                    fill="#fff"
+                                                />
+                                            </svg>
+                                        </Button>
+                                    </a>
+                                )}
                             </div>
                         </CardFooter>
                     </Card>
