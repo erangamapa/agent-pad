@@ -4,7 +4,7 @@ import {
     ModelClass,
     IAgentRuntime,
 } from "@elizaos/core";
-import { mockedCloudbetRules } from "./mockRulesData";
+import { dataDumpCloudbetRules } from "./dataDump";
 import { playerRoundsData } from "./roundsData";
 
 // Content storage to cache the data
@@ -14,7 +14,7 @@ let cachedRoundsData: any[] | null = null;
 /**
  * Fetch and parse the content from Cloudbet help/rules page
  * In a production environment, this would make a real HTTP request
- * but for this example, we'll use the mock data
+ * but for this example, we'll use the data dump
  */
 export const fetchCloudbetRules = async (): Promise<string> => {
     // If content is already cached, return it
@@ -23,15 +23,15 @@ export const fetchCloudbetRules = async (): Promise<string> => {
     }
 
     try {
-        elizaLogger.info("Loading Cloudbet rules from mock data...");
+        elizaLogger.info("Loading Cloudbet rules from data dump...");
 
         // In a real implementation, this would fetch data from the website
         // const response = await axios.get('https://www.cloudbet.com/en/help/rules');
         // const $ = cheerio.load(response.data);
         // Extract content using cheerio...
 
-        // Instead, we'll use our mock data
-        const content = mockedCloudbetRules;
+        // Instead, we'll use our data dump
+        const content = dataDumpCloudbetRules;
 
         // Cache the content for future use
         cachedContent = content;
@@ -41,42 +41,6 @@ export const fetchCloudbetRules = async (): Promise<string> => {
     } catch (error) {
         elizaLogger.error("Error loading Cloudbet rules:", error);
         throw new Error("Failed to load Cloudbet rules");
-    }
-};
-
-/**
- * Search for relevant information based on user query
- */
-export const searchRulesForQuery = async (query: string): Promise<string> => {
-    try {
-        // Get the rules content
-        const content = await fetchCloudbetRules();
-
-        // Convert query and content to lowercase for case-insensitive matching
-        const lowerQuery = query.toLowerCase();
-
-        // Define keywords to search for based on the query
-        const keywords = extractKeywords(lowerQuery);
-
-        // Search for paragraphs containing the keywords
-        const paragraphs = content.split("\n\n");
-        const relevantParagraphs = paragraphs.filter((paragraph) => {
-            const lowerParagraph = paragraph.toLowerCase();
-            return keywords.some((keyword) => lowerParagraph.includes(keyword));
-        });
-
-        // If no relevant paragraphs found, return a default message
-        if (relevantParagraphs.length === 0) {
-            return "I couldn't find specific information about that in Cloudbet's terms and conditions. Please try asking in a different way or contact Cloudbet support for more detailed information.";
-        }
-
-        // Combine relevant paragraphs into a response
-        let response = "\n\n";
-        response += relevantParagraphs.join("\n\n");
-        return response;
-    } catch (error) {
-        elizaLogger.error("Error searching rules:", error);
-        return "I'm having trouble accessing Cloudbet's terms and conditions right now. Please try again later or contact Cloudbet support directly.";
     }
 };
 
@@ -148,13 +112,6 @@ const extractKeywords = (query: string): string[] => {
 };
 
 /**
- * Get Cloudbet rules data
- */
-export const getCloudbetRulesData = (): string => {
-    return mockedCloudbetRules;
-};
-
-/**
  * Query Cloudbet rules using LLM capabilities
  * @param runtime The agent runtime
  * @param query The current user query
@@ -174,7 +131,7 @@ ${conversationContext ? `PREVIOUS CONVERSATION:\n${conversationContext}\n\n` : "
 CURRENT USER QUERY: ${query}
 
 CLOUDBET RULES AND TERMS REFERENCE:
-${mockedCloudbetRules}
+${dataDumpCloudbetRules}
 
 INSTRUCTIONS:
 - Give ONLY the exact answer from the reference material

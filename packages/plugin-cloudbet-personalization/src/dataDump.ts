@@ -1,9 +1,9 @@
 /**
- * Mock data representing Cloudbet's terms and conditions
+ * Data dump representing Cloudbet's terms and conditions
  * Sourced from https://www.cloudbet.com/en/help/rules
  */
-
-export const mockedCloudbetRules = `
+//TODO: Integrate with API when auth is implemented to support any signed in user
+export const dataDumpCloudbetRules = `
 # CLOUDBET TERMS & CONDITIONS
 
 ## Sportsbook Rules
@@ -75,4 +75,4 @@ Players who believe they may have a gambling problem are encouraged to seek help
 Cloudbet reserves the right to close or restrict accounts if we believe a player is showing signs of problem gambling.
 `;
 
-export default mockedCloudbetRules;
+export default dataDumpCloudbetRules;
