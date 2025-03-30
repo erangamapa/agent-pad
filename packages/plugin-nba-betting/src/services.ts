@@ -7,13 +7,6 @@ import {
     Side,
 } from "./types";
 import { v4 as uuidv4 } from "uuid";
-import {
-    getEventIdFromName,
-    getMarketUrl,
-    getPriceFromEventId,
-    getSideFromTeamName,
-} from "./utils";
-import { elizaLogger } from "@elizaos/core";
 
 const BASE_URL = "https://sports-api-stg.cloudbet.com";
 
