@@ -11,7 +11,6 @@ import {
     Client,
     Clients,
     DbCacheAdapter,
-    defaultCharacter,
     elizaLogger,
     FsCacheAdapter,
     IAgentRuntime,
