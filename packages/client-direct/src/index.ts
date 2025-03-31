@@ -5,7 +5,7 @@ import multer from "multer";
 import { z } from "zod";
 import {
     AgentRuntime,
-    elizaLogger,
+    aiverseLogger,
     messageCompletionFooter,
     generateCaption,
     generateImage,
@@ -21,7 +21,7 @@ import {
     stringToUuid,
     settings,
     IAgentRuntime,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { createApiRouter } from "./api.ts";
 import * as fs from "fs";
 import * as path from "path";
@@ -114,7 +114,7 @@ export class DirectClient {
     public startAgent: Function; // Store startAgent functor
 
     constructor() {
-        elizaLogger.log("DirectClient constructor");
+        aiverseLogger.log("DirectClient constructor");
         this.app = express();
         this.app.use(cors());
         this.agents = new Map();
@@ -511,7 +511,7 @@ export class DirectClient {
                 try {
                     hfOut = hyperfiOutSchema.parse(response.object);
                 } catch {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         "cant serialize response",
                         response.object
                     );
@@ -550,38 +550,42 @@ export class DirectClient {
                         content: contentObj,
                     };
 
-                    runtime.messageManager.createMemory(responseMessage).then(() => {
-                          const messageId = stringToUuid(Date.now().toString());
-                          const memory: Memory = {
-                              id: messageId,
-                              agentId: runtime.agentId,
-                              userId,
-                              roomId,
-                              content,
-                              createdAt: Date.now(),
-                          };
+                    runtime.messageManager
+                        .createMemory(responseMessage)
+                        .then(() => {
+                            const messageId = stringToUuid(
+                                Date.now().toString()
+                            );
+                            const memory: Memory = {
+                                id: messageId,
+                                agentId: runtime.agentId,
+                                userId,
+                                roomId,
+                                content,
+                                createdAt: Date.now(),
+                            };
 
-                          // run evaluators (generally can be done in parallel with processActions)
-                          // can an evaluator modify memory? it could but currently doesn't
-                          runtime.evaluate(memory, state).then(() => {
-                            // only need to call if responseMessage.content.action is set
-                            if (contentObj.action) {
-                                // pass memory (query) to any actions to call
-                                runtime.processActions(
-                                    memory,
-                                    [responseMessage],
-                                    state,
-                                    async (_newMessages) => {
-                                        // FIXME: this is supposed override what the LLM said/decided
-                                        // but the promise doesn't make this possible
-                                        //message = newMessages;
-                                        return [memory];
-                                    }
-                                ); // 0.674s
-                            }
-                            resolve(true);
+                            // run evaluators (generally can be done in parallel with processActions)
+                            // can an evaluator modify memory? it could but currently doesn't
+                            runtime.evaluate(memory, state).then(() => {
+                                // only need to call if responseMessage.content.action is set
+                                if (contentObj.action) {
+                                    // pass memory (query) to any actions to call
+                                    runtime.processActions(
+                                        memory,
+                                        [responseMessage],
+                                        state,
+                                        async (_newMessages) => {
+                                            // FIXME: this is supposed override what the LLM said/decided
+                                            // but the promise doesn't make this possible
+                                            //message = newMessages;
+                                            return [memory];
+                                        }
+                                    ); // 0.674s
+                                }
+                                resolve(true);
+                            });
                         });
-                    });
                 });
                 res.json({ response: hfOut });
             }
@@ -651,13 +655,13 @@ export class DirectClient {
                     assetId
                 );
 
-                elizaLogger.log("Download directory:", downloadDir);
+                aiverseLogger.log("Download directory:", downloadDir);
 
                 try {
-                    elizaLogger.log("Creating directory...");
+                    aiverseLogger.log("Creating directory...");
                     await fs.promises.mkdir(downloadDir, { recursive: true });
 
-                    elizaLogger.log("Fetching file...");
+                    aiverseLogger.log("Fetching file...");
                     const fileResponse = await fetch(
                         `https://api.bageldb.ai/api/v1/asset/${assetId}/download`,
                         {
@@ -673,7 +677,10 @@ export class DirectClient {
                         );
                     }
 
-                    elizaLogger.log("Response headers:", fileResponse.headers);
+                    aiverseLogger.log(
+                        "Response headers:",
+                        fileResponse.headers
+                    );
 
                     const fileName =
                         fileResponse.headers
@@ -681,19 +688,19 @@ export class DirectClient {
                             ?.split("filename=")[1]
                             ?.replace(/"/g, /* " */ "") || "default_name.txt";
 
-                    elizaLogger.log("Saving as:", fileName);
+                    aiverseLogger.log("Saving as:", fileName);
 
                     const arrayBuffer = await fileResponse.arrayBuffer();
                     const buffer = Buffer.from(arrayBuffer);
 
                     const filePath = path.join(downloadDir, fileName);
-                    elizaLogger.log("Full file path:", filePath);
+                    aiverseLogger.log("Full file path:", filePath);
 
                     await fs.promises.writeFile(filePath, buffer);
 
                     // Verify file was written
                     const stats = await fs.promises.stat(filePath);
-                    elizaLogger.log(
+                    aiverseLogger.log(
                         "File written successfully. Size:",
                         stats.size,
                         "bytes"
@@ -708,7 +715,7 @@ export class DirectClient {
                         fileSize: stats.size,
                     });
                 } catch (error) {
-                    elizaLogger.error("Detailed error:", error);
+                    aiverseLogger.error("Detailed error:", error);
                     res.status(500).json({
                         error: "Failed to download files from BagelDB",
                         details: error.message,
@@ -882,7 +889,7 @@ export class DirectClient {
 
                 res.send(Buffer.from(audioBuffer));
             } catch (error) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Error processing message or generating speech:",
                     error
                 );
@@ -955,7 +962,7 @@ export class DirectClient {
 
                 res.send(Buffer.from(audioBuffer));
             } catch (error) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Error processing message or generating speech:",
                     error
                 );
@@ -980,22 +987,22 @@ export class DirectClient {
 
     public start(port: number) {
         this.server = this.app.listen(port, () => {
-            elizaLogger.success(
+            aiverseLogger.success(
                 `REST API bound to 0.0.0.0:${port}. If running locally, access it at http://localhost:${port}.`
             );
         });
 
         // Handle graceful shutdown
         const gracefulShutdown = () => {
-            elizaLogger.log("Received shutdown signal, closing server...");
+            aiverseLogger.log("Received shutdown signal, closing server...");
             this.server.close(() => {
-                elizaLogger.success("Server closed successfully");
+                aiverseLogger.success("Server closed successfully");
                 process.exit(0);
             });
 
             // Force close after 5 seconds if server hasn't closed
             setTimeout(() => {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Could not close connections in time, forcefully shutting down"
                 );
                 process.exit(1);
@@ -1010,7 +1017,7 @@ export class DirectClient {
     public stop() {
         if (this.server) {
             this.server.close(() => {
-                elizaLogger.success("Server stopped");
+                aiverseLogger.success("Server stopped");
             });
         }
     }
@@ -1018,7 +1025,7 @@ export class DirectClient {
 
 export const DirectClientInterface: Client = {
     start: async (_runtime: IAgentRuntime) => {
-        elizaLogger.log("DirectClientInterface start");
+        aiverseLogger.log("DirectClientInterface start");
         const client = new DirectClient();
         const serverPort = parseInt(settings.SERVER_PORT || "3000");
         client.start(serverPort);

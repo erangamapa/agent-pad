@@ -1,9 +1,9 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     generateText,
     ModelClass,
     IAgentRuntime,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { dataDumpCloudbetRules } from "./dataDump";
 import { playerRoundsData } from "./roundsData";
 
@@ -23,7 +23,7 @@ export const fetchCloudbetRules = async (): Promise<string> => {
     }
 
     try {
-        elizaLogger.info("Loading Cloudbet rules from data dump...");
+        aiverseLogger.info("Loading Cloudbet rules from data dump...");
 
         // In a real implementation, this would fetch data from the website
         // const response = await axios.get('https://www.cloudbet.com/en/help/rules');
@@ -35,11 +35,11 @@ export const fetchCloudbetRules = async (): Promise<string> => {
 
         // Cache the content for future use
         cachedContent = content;
-        elizaLogger.success("Successfully loaded Cloudbet rules");
+        aiverseLogger.success("Successfully loaded Cloudbet rules");
 
         return content;
     } catch (error) {
-        elizaLogger.error("Error loading Cloudbet rules:", error);
+        aiverseLogger.error("Error loading Cloudbet rules:", error);
         throw new Error("Failed to load Cloudbet rules");
     }
 };
@@ -123,7 +123,7 @@ export const queryRulesWithLLM = async (
     conversationContext: string = ""
 ): Promise<string> => {
     try {
-        elizaLogger.info(`Querying Cloudbet rules for: ${query}`);
+        aiverseLogger.info(`Querying Cloudbet rules for: ${query}`);
 
         // Create context with conversation history, the rules data, and user query
         const context = `
@@ -174,12 +174,12 @@ ANY deviation from the strict output format will result in rejection of your res
             customSystemPrompt: systemPrompt,
         });
 
-        elizaLogger.success(
+        aiverseLogger.success(
             `Successfully generated response for query: ${query}`
         );
         return response;
     } catch (error) {
-        elizaLogger.error("Error querying Cloudbet rules with LLM:", error);
+        aiverseLogger.error("Error querying Cloudbet rules with LLM:", error);
         return "I'm having trouble accessing Cloudbet's terms and conditions right now. Please try again later or contact Cloudbet support directly.";
     }
 };
@@ -195,7 +195,7 @@ export const parsePlayerRoundsData = (): any[] => {
     }
 
     try {
-        elizaLogger.info("Parsing player rounds data...");
+        aiverseLogger.info("Parsing player rounds data...");
 
         const lines = playerRoundsData.trim().split("\n");
         const headers = lines[0].split(",");
@@ -233,11 +233,11 @@ export const parsePlayerRoundsData = (): any[] => {
         });
 
         cachedRoundsData = rounds;
-        elizaLogger.success("Successfully parsed player rounds data");
+        aiverseLogger.success("Successfully parsed player rounds data");
 
         return rounds;
     } catch (error) {
-        elizaLogger.error("Error parsing player rounds data:", error);
+        aiverseLogger.error("Error parsing player rounds data:", error);
         return [];
     }
 };
@@ -254,7 +254,7 @@ export const queryPlayerRoundsWithLLM = async (
     conversationContext: string = ""
 ): Promise<string> => {
     try {
-        elizaLogger.info(`Querying player rounds data for: ${query}`);
+        aiverseLogger.info(`Querying player rounds data for: ${query}`);
 
         // Ensure rounds data is parsed
         const rounds = parsePlayerRoundsData();
@@ -328,12 +328,15 @@ Examples of questions and factual answers:
             customSystemPrompt: systemPrompt,
         });
 
-        elizaLogger.success(
+        aiverseLogger.success(
             `Successfully generated response for player history query: ${query}`
         );
         return response;
     } catch (error) {
-        elizaLogger.error("Error querying player rounds data with LLM:", error);
+        aiverseLogger.error(
+            "Error querying player rounds data with LLM:",
+            error
+        );
         return "I'm having trouble analyzing your game history right now. Please try again later.";
     }
 };

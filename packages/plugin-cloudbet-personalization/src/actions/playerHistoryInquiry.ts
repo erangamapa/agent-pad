@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { queryPlayerRoundsWithLLM } from "../services";
 
 /**
@@ -52,7 +52,7 @@ const getConversationContext = (
 
         // In a real implementation, we would extract actual conversation history here
     } catch (error) {
-        elizaLogger.warn("Error gathering conversation context:", error);
+        aiverseLogger.warn("Error gathering conversation context:", error);
     }
 
     return context;
@@ -95,7 +95,7 @@ export const playerHistoryInquiryAction: Action = {
                 return true;
             }
 
-            elizaLogger.info(
+            aiverseLogger.info(
                 `Processing inquiry about player history: ${query}`
             );
 
@@ -116,7 +116,7 @@ export const playerHistoryInquiryAction: Action = {
 
             return true;
         } catch (error: any) {
-            elizaLogger.error(
+            aiverseLogger.error(
                 "Error in player history inquiry handler:",
                 error
             );

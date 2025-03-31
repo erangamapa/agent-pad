@@ -1,4 +1,4 @@
-import { Client, elizaLogger, IAgentRuntime } from "@elizaos/core";
+import { Client, aiverseLogger, IAgentRuntime } from "@aiverse/core";
 import { ClientBase } from "./base.ts";
 import { validateTwitterConfig, TwitterConfig } from "./environment.ts";
 import { TwitterInteractionClient } from "./interactions.ts";
@@ -30,11 +30,11 @@ class TwitterManager {
 
         // Optional search logic (enabled if TWITTER_SEARCH_ENABLE is true)
         if (twitterConfig.TWITTER_SEARCH_ENABLE) {
-            elizaLogger.warn("Twitter/X client running in a mode that:");
-            elizaLogger.warn("1. violates consent of random users");
-            elizaLogger.warn("2. burns your rate limit");
-            elizaLogger.warn("3. can get your account banned");
-            elizaLogger.warn("use at your own risk");
+            aiverseLogger.warn("Twitter/X client running in a mode that:");
+            aiverseLogger.warn("1. violates consent of random users");
+            aiverseLogger.warn("2. burns your rate limit");
+            aiverseLogger.warn("3. can get your account banned");
+            aiverseLogger.warn("use at your own risk");
             this.search = new TwitterSearchClient(this.client, runtime);
         }
 
@@ -53,7 +53,7 @@ export const TwitterClientInterface: Client = {
         const twitterConfig: TwitterConfig =
             await validateTwitterConfig(runtime);
 
-        elizaLogger.log("Twitter client started");
+        aiverseLogger.log("Twitter client started");
 
         const manager = new TwitterManager(runtime, twitterConfig);
 
@@ -80,7 +80,7 @@ export const TwitterClientInterface: Client = {
     },
 
     async stop(_runtime: IAgentRuntime) {
-        elizaLogger.warn("Twitter client does not support stopping yet");
+        aiverseLogger.warn("Twitter client does not support stopping yet");
     },
 };
 

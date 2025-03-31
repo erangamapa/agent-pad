@@ -1,4 +1,4 @@
-class ElizaLogger {
+class aiverseLoggerClass {
     constructor() {
         // Check if we're in Node.js environment
         this.isNode =
@@ -10,7 +10,7 @@ class ElizaLogger {
         this.verbose = this.isNode ? process.env.VERBOSE === "true" : false;
 
         // Add initialization logging
-        console.log(`[ElizaLogger] Initializing with:
+        console.log(`[aiverseLogger] Initializing with:
             isNode: ${this.isNode}
             verbose: ${this.verbose}
             VERBOSE env: ${process.env.VERBOSE}
@@ -221,7 +221,7 @@ class ElizaLogger {
         if (!this.verbose) {
             // for diagnosing verbose logging issues
             // console.log(
-            //     "[ElizaLogger] Debug message suppressed (verbose=false):",
+            //     "[aiverseLogger] Debug message suppressed (verbose=false):",
             //     ...strings
             // );
             return;
@@ -264,8 +264,8 @@ class ElizaLogger {
     }
 }
 
-export const elizaLogger = new ElizaLogger();
-elizaLogger.closeByNewLine = true;
-elizaLogger.useIcons = true;
+export const aiverseLogger = new aiverseLoggerClass();
+aiverseLogger.closeByNewLine = true;
+aiverseLogger.useIcons = true;
 
-export default elizaLogger;
+export default aiverseLogger;

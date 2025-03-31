@@ -1,7 +1,7 @@
-import { SqliteDatabaseAdapter } from "@elizaos/adapter-sqlite";
-import { RedisClient } from "@elizaos/adapter-redis";
-import { TelegramClientInterface } from "@elizaos/client-telegram";
-import { TwitterClientInterface } from "@elizaos/client-twitter";
+import { SqliteDatabaseAdapter } from "@aiverse/adapter-sqlite";
+import { RedisClient } from "@aiverse/adapter-redis";
+import { TelegramClientInterface } from "@aiverse/client-telegram";
+import { TwitterClientInterface } from "@aiverse/client-twitter";
 
 import {
     AgentRuntime,
@@ -11,7 +11,7 @@ import {
     Client,
     Clients,
     DbCacheAdapter,
-    elizaLogger,
+    aiverseLogger,
     FsCacheAdapter,
     IAgentRuntime,
     ICacheManager,
@@ -21,14 +21,14 @@ import {
     settings,
     stringToUuid,
     validateCharacterConfig,
-} from "@elizaos/core";
+} from "@aiverse/core";
 
-import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
-import { DirectClient } from "@elizaos/client-direct";
-import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
-import { twitterPlugin } from "@elizaos/plugin-twitter";
-import nbaBettingPlugin from "@elizaos/plugin-nba-betting";
-import { cloudbetPersonalization as cloudbetPersonalizationPlugin } from "@elizaos/plugin-cloudbet-personalization";
+import { bootstrapPlugin } from "@aiverse/plugin-bootstrap";
+import { DirectClient } from "@aiverse/client-direct";
+import { imageGenerationPlugin } from "@aiverse/plugin-image-generation";
+import { twitterPlugin } from "@aiverse/plugin-twitter";
+import nbaBettingPlugin from "@aiverse/plugin-nba-betting";
+import { cloudbetPersonalization as cloudbetPersonalizationPlugin } from "@aiverse/plugin-cloudbet-personalization";
 
 import Database from "better-sqlite3";
 import fs from "fs";
@@ -49,7 +49,7 @@ export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
 };
 
 const logFetch = async (url: string, options: any) => {
-    elizaLogger.debug(`Fetching ${url}`);
+    aiverseLogger.debug(`Fetching ${url}`);
     return fetch(url, options);
 };
 
@@ -70,7 +70,7 @@ export function parseArguments(): {
             })
             .parseSync();
     } catch (error) {
-        elizaLogger.error("Error parsing arguments:", error);
+        aiverseLogger.error("Error parsing arguments:", error);
         return {};
     }
 }
@@ -142,7 +142,7 @@ async function loadCharacter(filePath: string): Promise<Character> {
 
     character.plugins = await handlePluginImporting(character.plugins);
     if (character.extends) {
-        elizaLogger.info(
+        aiverseLogger.info(
             `Merging ${character.name} character with parent characters`
         );
         for (const extendPath of character.extends) {
@@ -150,7 +150,7 @@ async function loadCharacter(filePath: string): Promise<Character> {
                 path.resolve(path.dirname(filePath), extendPath)
             );
             character = mergeCharacters(baseCharacter, character);
-            elizaLogger.info(
+            aiverseLogger.info(
                 `Merged ${character.name} with ${baseCharacter.name}`
             );
         }
@@ -193,7 +193,7 @@ export async function loadCharacters(
                 ),
             ];
 
-            elizaLogger.info(
+            aiverseLogger.info(
                 "Trying paths:",
                 pathsToTry.map((p) => ({
                     path: p,
@@ -210,22 +210,22 @@ export async function loadCharacters(
             }
 
             if (content === null) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     `Error loading character from ${characterPath}: File not found in any of the expected locations`
                 );
-                elizaLogger.error("Tried the following paths:");
-                pathsToTry.forEach((p) => elizaLogger.error(` - ${p}`));
+                aiverseLogger.error("Tried the following paths:");
+                pathsToTry.forEach((p) => aiverseLogger.error(` - ${p}`));
                 process.exit(1);
             }
 
             try {
                 const character: Character = await loadCharacter(resolvedPath);
                 loadedCharacters.push(character);
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Successfully loaded character from: ${resolvedPath}`
                 );
             } catch (e) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     `Error parsing character from ${resolvedPath}: ${e}`
                 );
                 process.exit(1);
@@ -234,7 +234,7 @@ export async function loadCharacters(
     }
 
     if (loadedCharacters.length === 0) {
-        elizaLogger.info("No characters found, using default character");
+        aiverseLogger.info("No characters found, using default character");
         loadedCharacters.push(mainCharacter);
         loadedCharacters.push(highRollerHostCharacter);
     }
@@ -244,21 +244,21 @@ export async function loadCharacters(
 
 async function handlePluginImporting(plugins: string[]) {
     if (plugins.length > 0) {
-        elizaLogger.info("Plugins are: ", plugins);
+        aiverseLogger.info("Plugins are: ", plugins);
         const importedPlugins = await Promise.all(
             plugins.map(async (plugin) => {
                 try {
                     const importedPlugin = await import(plugin);
                     const functionName =
                         plugin
-                            .replace("@elizaos/plugin-", "")
+                            .replace("@aiverse/plugin-", "")
                             .replace(/-./g, (x) => x[1].toUpperCase()) +
                         "Plugin";
                     return (
                         importedPlugin.default || importedPlugin[functionName]
                     );
                 } catch (importError) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         `Failed to import plugin: ${plugin}`,
                         importError
                     );
@@ -407,7 +407,7 @@ export function getTokenForProvider(
             );
         default:
             const errorMessage = `Failed to get token - unsupported model provider: ${provider}`;
-            elizaLogger.error(errorMessage);
+            aiverseLogger.error(errorMessage);
             throw new Error(errorMessage);
     }
 }
@@ -415,15 +415,15 @@ export function getTokenForProvider(
 function initializeDatabase(dataDir: string) {
     const filePath =
         process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
-    elizaLogger.info(`Initializing SQLite database at ${filePath}...`);
+    aiverseLogger.info(`Initializing SQLite database at ${filePath}...`);
     const db = new SqliteDatabaseAdapter(new Database(filePath));
 
     db.init()
         .then(() => {
-            elizaLogger.success("Successfully connected to SQLite database");
+            aiverseLogger.success("Successfully connected to SQLite database");
         })
         .catch((error) => {
-            elizaLogger.error("Failed to connect to SQLite:", error);
+            aiverseLogger.error("Failed to connect to SQLite:", error);
         });
 
     return db;
@@ -436,7 +436,7 @@ export async function initializeClients(
     const clients: Record<string, any> = {};
     const clientTypes: string[] =
         character.clients?.map((str) => str.toLowerCase()) || [];
-    elizaLogger.log("initializeClients", clientTypes, "for", character.name);
+    aiverseLogger.log("initializeClients", clientTypes, "for", character.name);
 
     if (clientTypes.includes(Clients.TELEGRAM)) {
         const telegramClient = await TelegramClientInterface.start(runtime);
@@ -450,7 +450,7 @@ export async function initializeClients(
         }
     }
 
-    elizaLogger.log("client keys", Object.keys(clients));
+    aiverseLogger.log("client keys", Object.keys(clients));
 
     function determineClientType(client: Client): string {
         if ("type" in client) {
@@ -471,7 +471,7 @@ export async function initializeClients(
                 for (const client of plugin.clients) {
                     const startedClient = await client.start(runtime);
                     const clientType = determineClientType(client);
-                    elizaLogger.debug(
+                    aiverseLogger.debug(
                         `Initializing client of type: ${clientType}`
                     );
                     clients[clientType] = startedClient;
@@ -495,7 +495,7 @@ export async function createAgent(
     cache: ICacheManager,
     token: string
 ): Promise<AgentRuntime> {
-    elizaLogger.log(`Creating runtime for character ${character.name}`);
+    aiverseLogger.log(`Creating runtime for character ${character.name}`);
 
     return new AgentRuntime({
         databaseAdapter: db,
@@ -549,7 +549,7 @@ function initializeCache(
     switch (cacheStore) {
         case CacheStore.REDIS:
             if (process.env.REDIS_URL) {
-                elizaLogger.info("Connecting to Redis...");
+                aiverseLogger.info("Connecting to Redis...");
                 const redisClient = new RedisClient(process.env.REDIS_URL);
                 if (!character?.id) {
                     throw new Error(
@@ -565,7 +565,7 @@ function initializeCache(
 
         case CacheStore.DATABASE:
             if (db) {
-                elizaLogger.info("Using Database Cache...");
+                aiverseLogger.info("Using Database Cache...");
                 return initializeDbCache(character, db);
             } else {
                 throw new Error(
@@ -574,7 +574,7 @@ function initializeCache(
             }
 
         case CacheStore.FILESYSTEM:
-            elizaLogger.info("Using File System Cache...");
+            aiverseLogger.info("Using File System Cache...");
             if (!baseDir) {
                 throw new Error(
                     "baseDir must be provided for CacheStore.FILESYSTEM."
@@ -629,15 +629,15 @@ async function startAgent(
 
         directClient.registerAgent(runtime);
 
-        elizaLogger.debug(`Started ${character.name} as ${runtime.agentId}`);
+        aiverseLogger.debug(`Started ${character.name} as ${runtime.agentId}`);
 
         return runtime;
     } catch (error) {
-        elizaLogger.error(
+        aiverseLogger.error(
             `Error starting agent for character ${character.name}:`,
             error
         );
-        elizaLogger.error(error);
+        aiverseLogger.error(error);
         if (db) {
             await db.close();
         }
@@ -676,11 +676,11 @@ const startAgents = async () => {
             await startAgent(character, directClient);
         }
     } catch (error) {
-        elizaLogger.error("Error starting agents:", error);
+        aiverseLogger.error("Error starting agents:", error);
     }
 
     while (!(await checkPortAvailable(serverPort))) {
-        elizaLogger.warn(
+        aiverseLogger.warn(
             `Port ${serverPort} is in use, trying ${serverPort + 1}`
         );
         serverPort++;
@@ -694,15 +694,15 @@ const startAgents = async () => {
     directClient.start(serverPort);
 
     if (serverPort !== parseInt(settings.SERVER_PORT || "3000")) {
-        elizaLogger.log(`Server started on alternate port ${serverPort}`);
+        aiverseLogger.log(`Server started on alternate port ${serverPort}`);
     }
 
-    elizaLogger.log(
+    aiverseLogger.log(
         "Run `pnpm start:client` to start the client and visit the outputted URL (http://localhost:5173) to chat with your agents. When running multiple agents, use client with different port `SERVER_PORT=3001 pnpm start:client`"
     );
 };
 
 startAgents().catch((error) => {
-    elizaLogger.error("Unhandled error in startAgents:", error);
+    aiverseLogger.error("Unhandled error in startAgents:", error);
     process.exit(1);
 });

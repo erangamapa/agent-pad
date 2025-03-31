@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { validateNBAMoneyLineBettingConfig } from "../environment";
 import { getBetHistoryExamples } from "../examples";
 import { createNBABettingService } from "../services";
@@ -85,7 +85,7 @@ export const getBetHistoryAction: Action = {
             const totalBets = betHistoryData.totalBets;
             const responseText = `You have placed ${totalBets} bet${parseInt(totalBets) !== 1 ? "s" : ""} in total:\n\n${formattedBets.join("\n\n")}`;
 
-            elizaLogger.success(
+            aiverseLogger.success(
                 `Successfully fetched bet history with ${totalBets} bets`
             );
 
@@ -94,7 +94,7 @@ export const getBetHistoryAction: Action = {
             });
             return true;
         } catch (error: any) {
-            elizaLogger.error("Error in NBA bet history handler:", error);
+            aiverseLogger.error("Error in NBA bet history handler:", error);
             callback({
                 text: "I'm having trouble retrieving your betting history right now. Please try again later.",
             });

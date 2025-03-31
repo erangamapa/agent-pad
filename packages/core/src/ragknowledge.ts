@@ -1,6 +1,6 @@
 import { embed } from "./embedding.ts";
 import { splitChunks } from "./generation.ts";
-import elizaLogger from "./logger.ts";
+import aiverseLogger from "./logger.ts";
 import {
     IAgentRuntime,
     IRAGKnowledgeManager,
@@ -107,7 +107,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
 
     private preprocess(content: string): string {
         if (!content || typeof content !== "string") {
-            elizaLogger.warn("Invalid input for preprocessing");
+            aiverseLogger.warn("Invalid input for preprocessing");
             return "";
         }
 
@@ -258,7 +258,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
 
     async createKnowledge(item: RAGKnowledgeItem): Promise<void> {
         if (!item.content.text) {
-            elizaLogger.warn("Empty content in knowledge item");
+            aiverseLogger.warn("Empty content in knowledge item");
             return;
         }
 
@@ -312,7 +312,10 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
                 });
             }
         } catch (error) {
-            elizaLogger.error(`Error processing knowledge ${item.id}:`, error);
+            aiverseLogger.error(
+                `Error processing knowledge ${item.id}:`,
+                error
+            );
             throw error;
         }
     }
@@ -363,7 +366,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
     }): Promise<void> {
         const timeMarker = (label: string) => {
             const time = (Date.now() - startTime) / 1000;
-            elizaLogger.info(`[Timing] ${label}: ${time.toFixed(2)}s`);
+            aiverseLogger.info(`[Timing] ${label}: ${time.toFixed(2)}s`);
         };
 
         const startTime = Date.now();
@@ -371,7 +374,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
 
         try {
             const fileSizeKB = new TextEncoder().encode(content).length / 1024;
-            elizaLogger.info(
+            aiverseLogger.info(
                 `[File Progress] Starting ${file.path} (${fileSizeKB.toFixed(2)} KB)`
             );
 
@@ -408,7 +411,7 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
             // Step 4: Generate chunks
             const chunks = await splitChunks(processedContent, 512, 20);
             const totalChunks = chunks.length;
-            elizaLogger.info(`Generated ${totalChunks} chunks`);
+            aiverseLogger.info(`Generated ${totalChunks} chunks`);
             timeMarker("Chunk generation");
 
             // Step 5: Process chunks with larger batches
@@ -456,13 +459,13 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
 
                 processedChunks += batch.length;
                 const batchTime = (Date.now() - batchStart) / 1000;
-                elizaLogger.info(
+                aiverseLogger.info(
                     `[Batch Progress] Processed ${processedChunks}/${totalChunks} chunks (${batchTime.toFixed(2)}s for batch)`
                 );
             }
 
             const totalTime = (Date.now() - startTime) / 1000;
-            elizaLogger.info(
+            aiverseLogger.info(
                 `[Complete] Processed ${file.path} in ${totalTime.toFixed(2)}s`
             );
         } catch (error) {
@@ -470,12 +473,12 @@ export class RAGKnowledgeManager implements IRAGKnowledgeManager {
                 file.isShared &&
                 error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY"
             ) {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Shared knowledge ${file.path} already exists in database, skipping creation`
                 );
                 return;
             }
-            elizaLogger.error(`Error processing file ${file.path}:`, error);
+            aiverseLogger.error(`Error processing file ${file.path}:`, error);
             throw error;
         }
     }

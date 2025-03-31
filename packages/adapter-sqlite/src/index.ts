@@ -3,9 +3,9 @@ export * from "./sqlite_vec.ts";
 
 import {
     DatabaseAdapter,
-    elizaLogger,
+    aiverseLogger,
     IDatabaseCacheAdapter,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import {
     Account,
     Actor,
@@ -16,7 +16,7 @@ import {
     type Relationship,
     type UUID,
     RAGKnowledgeItem,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { Database } from "better-sqlite3";
 import { v4 } from "uuid";
 import { load } from "./sqlite_vec.ts";
@@ -866,7 +866,7 @@ export class SqliteDatabaseAdapter
 
             return results;
         } catch (error) {
-            elizaLogger.error("Error in searchKnowledge:", error);
+            aiverseLogger.error("Error in searchKnowledge:", error);
             throw error;
         }
     }
@@ -906,7 +906,7 @@ export class SqliteDatabaseAdapter
                 error?.code === "SQLITE_CONSTRAINT_PRIMARYKEY";
 
             if (isShared && isPrimaryKeyError) {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Shared knowledge ${knowledge.id} already exists, skipping`
                 );
                 return;
@@ -914,15 +914,18 @@ export class SqliteDatabaseAdapter
                 !isShared &&
                 !error.message?.includes("SQLITE_CONSTRAINT_PRIMARYKEY")
             ) {
-                elizaLogger.error(`Error creating knowledge ${knowledge.id}:`, {
-                    error,
-                    embeddingLength: knowledge.embedding?.length,
-                    content: knowledge.content,
-                });
+                aiverseLogger.error(
+                    `Error creating knowledge ${knowledge.id}:`,
+                    {
+                        error,
+                        embeddingLength: knowledge.embedding?.length,
+                        content: knowledge.content,
+                    }
+                );
                 throw error;
             }
 
-            elizaLogger.debug(
+            aiverseLogger.debug(
                 `Knowledge ${knowledge.id} already exists, skipping`
             );
         }
@@ -940,7 +943,7 @@ export class SqliteDatabaseAdapter
         try {
             this.db.prepare(sql).run(agentId);
         } catch (error) {
-            elizaLogger.error(
+            aiverseLogger.error(
                 `Error clearing knowledge for agent ${agentId}:`,
                 error
             );

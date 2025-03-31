@@ -1,4 +1,4 @@
-import { IAgentRuntime } from "@elizaos/core";
+import { IAgentRuntime } from "@aiverse/core";
 import { z } from "zod";
 
 export const imageGenEnvSchema = z
@@ -49,8 +49,7 @@ export async function validateImageGenConfig(
                 runtime.getSetting("HEURIST_API_KEY") ||
                 process.env.HEURIST_API_KEY,
             FAL_API_KEY:
-                runtime.getSetting("FAL_API_KEY") ||
-                process.env.FAL_API_KEY,
+                runtime.getSetting("FAL_API_KEY") || process.env.FAL_API_KEY,
             OPENAI_API_KEY:
                 runtime.getSetting("OPENAI_API_KEY") ||
                 process.env.OPENAI_API_KEY,

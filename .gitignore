@@ -58,6 +58,6 @@ coverage
 
 agent/content
 
-eliza.manifest
-eliza.manifest.sgx
-eliza.sig
+aiverse.manifest
+aiverse.manifest.sgx
+aiverse.sig

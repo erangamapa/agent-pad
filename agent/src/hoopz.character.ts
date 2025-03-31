@@ -1,6 +1,6 @@
-import { ModelProviderName, Clients } from "@elizaos/core";
-import { nbaBetting } from "@elizaos/plugin-nba-betting";
-import { imageGenerationPlugin } from "@elizaos/plugin-image-generation";
+import { ModelProviderName, Clients } from "@aiverse/core";
+import { nbaBetting } from "@aiverse/plugin-nba-betting";
+import { imageGenerationPlugin } from "@aiverse/plugin-image-generation";
 
 export const mainCharacter = {
     name: "Agent Hoopz",

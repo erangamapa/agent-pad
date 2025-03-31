@@ -33,7 +33,7 @@ export default function useVersion() {
 
     const compareVersion = async () => {
         try {
-            const latestVersion = await getLatestRelease("elizaos/eliza");
+            const latestVersion = await getLatestRelease("aiverse/aiverse");
             const thisVersion = info?.version;
             if (latestVersion && thisVersion) {
                 if (

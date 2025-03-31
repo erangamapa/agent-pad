@@ -1,5 +1,5 @@
-import { elizaLogger, IAgentRuntime, ModelClass } from "@elizaos/core";
-import { generateText } from "@elizaos/core";
+import { aiverseLogger, IAgentRuntime, ModelClass } from "@aiverse/core";
+import { generateText } from "@aiverse/core";
 import { teamNames } from "../referenceData";
 
 interface ExtractedData {
@@ -44,7 +44,7 @@ or with different team names:
             context: prompt,
             modelClass: ModelClass.SMALL,
         });
-        elizaLogger.success(response);
+        aiverseLogger.success(response);
         const extractedData = JSON.parse(response);
         return extractedData;
     } catch (error) {

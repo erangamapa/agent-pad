@@ -6,10 +6,10 @@ import {
     State,
     UUID,
     getEmbeddingZeroVector,
-    elizaLogger,
+    aiverseLogger,
     stringToUuid,
     ActionTimelineType,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import {
     QueryTweetsResponse,
     Scraper,
@@ -170,16 +170,16 @@ export class ClientBase extends EventEmitter {
         const cachedCookies = await this.getCachedCookies(username);
 
         if (cachedCookies) {
-            elizaLogger.info("Using cached cookies");
+            aiverseLogger.info("Using cached cookies");
             await this.setCookiesFromArray(cachedCookies);
         }
 
-        elizaLogger.log("Waiting for Twitter login");
+        aiverseLogger.log("Waiting for Twitter login");
         while (retries > 0) {
             try {
                 if (await this.twitterClient.isLoggedIn()) {
                     // cookies are valid, no login required
-                    elizaLogger.info("Successfully logged in.");
+                    aiverseLogger.info("Successfully logged in.");
                     break;
                 } else {
                     await this.twitterClient.login(
@@ -190,8 +190,8 @@ export class ClientBase extends EventEmitter {
                     );
                     if (await this.twitterClient.isLoggedIn()) {
                         // fresh login, store new cookies
-                        elizaLogger.info("Successfully logged in.");
-                        elizaLogger.info("Caching cookies");
+                        aiverseLogger.info("Successfully logged in.");
+                        aiverseLogger.info("Caching cookies");
                         await this.cacheCookies(
                             username,
                             await this.twitterClient.getCookies()
@@ -200,16 +200,16 @@ export class ClientBase extends EventEmitter {
                     }
                 }
             } catch (error) {
-                elizaLogger.error(`Login attempt failed: ${error.message}`);
+                aiverseLogger.error(`Login attempt failed: ${error.message}`);
             }
 
             retries--;
-            elizaLogger.error(
+            aiverseLogger.error(
                 `Failed to login to Twitter. Retrying... (${retries} attempts left)`
             );
 
             if (retries === 0) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Max retries reached. Exiting login process."
                 );
                 throw new Error("Twitter login failed after maximum retries.");
@@ -221,8 +221,8 @@ export class ClientBase extends EventEmitter {
         this.profile = await this.fetchProfile(username);
 
         if (this.profile) {
-            elizaLogger.log("Twitter user ID:", this.profile.id);
-            elizaLogger.log(
+            aiverseLogger.log("Twitter user ID:", this.profile.id);
+            aiverseLogger.log(
                 "Twitter loaded:",
                 JSON.stringify(this.profile, null, 10)
             );
@@ -243,7 +243,7 @@ export class ClientBase extends EventEmitter {
     }
 
     async fetchOwnPosts(count: number): Promise<Tweet[]> {
-        elizaLogger.debug("fetching own posts");
+        aiverseLogger.debug("fetching own posts");
         const homeTimeline = await this.twitterClient.getUserTweets(
             this.profile.id,
             count
@@ -258,12 +258,12 @@ export class ClientBase extends EventEmitter {
         count: number,
         following?: boolean
     ): Promise<Tweet[]> {
-        elizaLogger.debug("fetching home timeline");
+        aiverseLogger.debug("fetching home timeline");
         const homeTimeline = following
             ? await this.twitterClient.fetchFollowingTimeline(count, [])
             : await this.twitterClient.fetchHomeTimeline(count, []);
 
-        elizaLogger.debug(homeTimeline, { depth: Infinity });
+        aiverseLogger.debug(homeTimeline, { depth: Infinity });
         const processedTimeline = homeTimeline
             .filter((t) => t.__typename !== "TweetWithVisibilityResults") // what's this about?
             .map((tweet) => {
@@ -314,12 +314,12 @@ export class ClientBase extends EventEmitter {
                 //console.log("obj is", obj);
                 return obj;
             });
-        //elizaLogger.debug("process homeTimeline", processedTimeline);
+        //aiverseLogger.debug("process homeTimeline", processedTimeline);
         return processedTimeline;
     }
 
     async fetchTimelineForActions(count: number): Promise<Tweet[]> {
-        elizaLogger.debug("fetching timeline for actions");
+        aiverseLogger.debug("fetching timeline for actions");
 
         const agentUsername = this.twitterConfig.TWITTER_USERNAME;
 
@@ -361,7 +361,7 @@ export class ClientBase extends EventEmitter {
             .slice(0, count);
         // TODO: Once the 'count' parameter is fixed in the 'fetchTimeline' method of the 'agent-twitter-client',
         // this workaround can be removed.
-        // Related issue: https://github.com/elizaos/agent-twitter-client/issues/43
+        // Related issue: https://github.com/aiverse/agent-twitter-client/issues/43
     }
 
     async fetchSearchTweets(
@@ -392,17 +392,17 @@ export class ClientBase extends EventEmitter {
                 );
                 return (result ?? { tweets: [] }) as QueryTweetsResponse;
             } catch (error) {
-                elizaLogger.error("Error fetching search tweets:", error);
+                aiverseLogger.error("Error fetching search tweets:", error);
                 return { tweets: [] };
             }
         } catch (error) {
-            elizaLogger.error("Error fetching search tweets:", error);
+            aiverseLogger.error("Error fetching search tweets:", error);
             return { tweets: [] };
         }
     }
 
     private async populateTimeline() {
-        elizaLogger.debug("populating timeline...");
+        aiverseLogger.debug("populating timeline...");
 
         const cachedTimeline = await this.getCachedTimeline();
 
@@ -451,7 +451,7 @@ export class ClientBase extends EventEmitter {
 
                 // Save the missing tweets as memories
                 for (const tweet of tweetsToSave) {
-                    elizaLogger.log("Saving Tweet", tweet.id);
+                    aiverseLogger.log("Saving Tweet", tweet.id);
 
                     const roomId = stringToUuid(
                         tweet.conversationId + "-" + this.runtime.agentId
@@ -493,7 +493,7 @@ export class ClientBase extends EventEmitter {
                             : undefined,
                     } as Content;
 
-                    elizaLogger.log("Creating memory for tweet", tweet.id);
+                    aiverseLogger.log("Creating memory for tweet", tweet.id);
 
                     // check if it already exists
                     const memory =
@@ -502,7 +502,7 @@ export class ClientBase extends EventEmitter {
                         );
 
                     if (memory) {
-                        elizaLogger.log(
+                        aiverseLogger.log(
                             "Memory already exists, skipping timeline population"
                         );
                         break;
@@ -521,7 +521,7 @@ export class ClientBase extends EventEmitter {
                     await this.cacheTweet(tweet);
                 }
 
-                elizaLogger.log(
+                aiverseLogger.log(
                     `Populated ${tweetsToSave.length} missing tweets from the cache.`
                 );
                 return;
@@ -572,7 +572,7 @@ export class ClientBase extends EventEmitter {
                 )
         );
 
-        elizaLogger.debug({
+        aiverseLogger.debug({
             processingTweets: tweetsToSave.map((tweet) => tweet.id).join(","),
         });
 
@@ -585,7 +585,7 @@ export class ClientBase extends EventEmitter {
 
         // Save the new tweets as memories
         for (const tweet of tweetsToSave) {
-            elizaLogger.log("Saving Tweet", tweet.id);
+            aiverseLogger.log("Saving Tweet", tweet.id);
 
             const roomId = stringToUuid(
                 tweet.conversationId + "-" + this.runtime.agentId
@@ -666,7 +666,10 @@ export class ClientBase extends EventEmitter {
                 recentMessage.length > 0 &&
                 recentMessage[0].content === message.content
             ) {
-                elizaLogger.debug("Message already saved", recentMessage[0].id);
+                aiverseLogger.debug(
+                    "Message already saved",
+                    recentMessage[0].id
+                );
             } else {
                 await this.runtime.messageManager.createMemory({
                     ...message,

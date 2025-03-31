@@ -115,37 +115,37 @@ importers:
 
   agent:
     dependencies:
-      '@elizaos/adapter-redis':
+      '@aiverse/adapter-redis':
         specifier: workspace:*
         version: link:../packages/adapter-redis
-      '@elizaos/adapter-sqlite':
+      '@aiverse/adapter-sqlite':
         specifier: workspace:*
         version: link:../packages/adapter-sqlite
-      '@elizaos/client-direct':
+      '@aiverse/client-direct':
         specifier: workspace:*
         version: link:../packages/client-direct
-      '@elizaos/client-telegram':
+      '@aiverse/client-telegram':
         specifier: workspace:*
         version: link:../packages/client-telegram
-      '@elizaos/client-twitter':
+      '@aiverse/client-twitter':
         specifier: workspace:*
         version: link:../packages/client-twitter
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../packages/core
-      '@elizaos/plugin-bootstrap':
+      '@aiverse/plugin-bootstrap':
         specifier: workspace:*
         version: link:../packages/plugin-bootstrap
-      '@elizaos/plugin-cloudbet-personalization':
+      '@aiverse/plugin-cloudbet-personalization':
         specifier: workspace:*
         version: link:../packages/plugin-cloudbet-personalization
-      '@elizaos/plugin-image-generation':
+      '@aiverse/plugin-image-generation':
         specifier: workspace:*
         version: link:../packages/plugin-image-generation
-      '@elizaos/plugin-nba-betting':
+      '@aiverse/plugin-nba-betting':
         specifier: workspace:*
         version: link:../packages/plugin-nba-betting
-      '@elizaos/plugin-twitter':
+      '@aiverse/plugin-twitter':
         specifier: workspace:*
         version: link:../packages/plugin-twitter
       readline:
@@ -176,7 +176,7 @@ importers:
 
   client:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../packages/core
       '@radix-ui/react-avatar':
@@ -330,7 +330,7 @@ importers:
 
   packages/adapter-redis:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       ioredis:
@@ -349,7 +349,7 @@ importers:
 
   packages/adapter-sqlite:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       '@types/better-sqlite3':
@@ -371,10 +371,10 @@ importers:
 
   packages/client-direct:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
-      '@elizaos/plugin-image-generation':
+      '@aiverse/plugin-image-generation':
         specifier: workspace:*
         version: link:../plugin-image-generation
       '@types/body-parser':
@@ -417,7 +417,7 @@ importers:
 
   packages/client-telegram:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       '@telegraf/types':
@@ -439,7 +439,7 @@ importers:
 
   packages/client-twitter:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       agent-twitter-client:
@@ -645,7 +645,7 @@ importers:
 
   packages/plugin-bootstrap:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       tsup:
@@ -657,7 +657,7 @@ importers:
 
   packages/plugin-cloudbet-personalization:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       '@types/uuid':
@@ -685,7 +685,7 @@ importers:
 
   packages/plugin-image-generation:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       tsup:
@@ -697,7 +697,7 @@ importers:
 
   packages/plugin-nba-betting:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       '@types/uuid':
@@ -725,7 +725,7 @@ importers:
 
   packages/plugin-twitter:
     dependencies:
-      '@elizaos/core':
+      '@aiverse/core':
         specifier: workspace:*
         version: link:../core
       agent-twitter-client:

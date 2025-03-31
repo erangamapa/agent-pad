@@ -2,7 +2,7 @@ import {
     parseBooleanFromText,
     IAgentRuntime,
     ActionTimelineType,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { z, ZodError } from "zod";
 
 export const DEFAULT_MAX_TWEET_LENGTH = 280;

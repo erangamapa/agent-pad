@@ -1,4 +1,4 @@
-import { Plugin } from "@elizaos/core";
+import { Plugin } from "@aiverse/core";
 import { getNBAMoneyLineMarketsAction } from "./actions/getNBAMoneyLineMarkets";
 import { placeNBAMoneyLineBet } from "./actions/placeNBAMoneyLineBet";
 import { generateNBABetSlip } from "./actions/generateNBABetSlip";

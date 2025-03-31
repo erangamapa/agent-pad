@@ -11,7 +11,7 @@ import {
     IDatabaseAdapter,
 } from "./types.ts";
 import { CircuitBreaker } from "./database/CircuitBreaker";
-import { elizaLogger } from "./logger";
+import { aiverseLogger } from "./logger";
 
 /**
  * An abstract class representing a database adapter for managing various entities
@@ -382,12 +382,12 @@ export abstract class DatabaseAdapter<DB = any> implements IDatabaseAdapter {
         userId: UUID;
     }): Promise<Relationship[]>;
 
-     /**
+    /**
      * Retrieves knowledge items based on specified parameters.
      * @param params Object containing search parameters
      * @returns Promise resolving to array of knowledge items
      */
-     abstract getKnowledge(params: {
+    abstract getKnowledge(params: {
         id?: UUID;
         agentId: UUID;
         limit?: number;
@@ -439,7 +439,7 @@ export abstract class DatabaseAdapter<DB = any> implements IDatabaseAdapter {
         try {
             return await this.circuitBreaker.execute(operation);
         } catch (error) {
-            elizaLogger.error(`Circuit breaker error in ${context}:`, {
+            aiverseLogger.error(`Circuit breaker error in ${context}:`, {
                 error: error instanceof Error ? error.message : String(error),
                 state: this.circuitBreaker.getState(),
             });

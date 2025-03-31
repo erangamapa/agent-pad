@@ -4,14 +4,14 @@ import cors from "cors";
 
 import {
     AgentRuntime,
-    elizaLogger,
+    aiverseLogger,
     getEnvVariable,
     UUID,
     validateCharacterConfig,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { REST, Routes } from "discord.js";
 import { DirectClient } from ".";
-import { validateUuid } from "@elizaos/core";
+import { validateUuid } from "@aiverse/core";
 
 interface UUIDParams {
     agentId: UUID;
@@ -121,7 +121,7 @@ export function createApiRouter(
         try {
             validateCharacterConfig(character);
         } catch (e) {
-            elizaLogger.error(`Error parsing character: ${e}`);
+            aiverseLogger.error(`Error parsing character: ${e}`);
             res.status(400).json({
                 success: false,
                 message: e.message,
@@ -131,7 +131,7 @@ export function createApiRouter(
 
         // start it up (and register it)
         agent = await directClient.startAgent(character);
-        elizaLogger.log(`${character.name} started`);
+        aiverseLogger.log(`${character.name} started`);
 
         res.json({
             id: character.id,

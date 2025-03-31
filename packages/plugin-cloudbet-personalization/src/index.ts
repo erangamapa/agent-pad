@@ -1,4 +1,4 @@
-import { Plugin } from "@elizaos/core";
+import { Plugin } from "@aiverse/core";
 import { cloudbetRulesInquiryAction } from "./actions/cloudbetRulesInquiry";
 import { playerHistoryInquiryAction } from "./actions/playerHistoryInquiry";
 import { loyaltyProgramInquiryAction } from "./actions/loyaltyProgramInquiry";

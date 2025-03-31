@@ -1,10 +1,10 @@
 import { Tweet } from "agent-twitter-client";
-import { getEmbeddingZeroVector } from "@elizaos/core";
-import { Content, Memory, UUID } from "@elizaos/core";
-import { stringToUuid } from "@elizaos/core";
+import { getEmbeddingZeroVector } from "@aiverse/core";
+import { Content, Memory, UUID } from "@aiverse/core";
+import { stringToUuid } from "@aiverse/core";
 import { ClientBase } from "./base";
-import { elizaLogger } from "@elizaos/core";
-import { Media } from "@elizaos/core";
+import { aiverseLogger } from "@aiverse/core";
+import { Media } from "@aiverse/core";
 import fs from "fs";
 import path from "path";
 
@@ -38,20 +38,20 @@ export async function buildConversationThread(
     const visited: Set<string> = new Set();
 
     async function processThread(currentTweet: Tweet, depth: number = 0) {
-        elizaLogger.debug("Processing tweet:", {
+        aiverseLogger.debug("Processing tweet:", {
             id: currentTweet.id,
             inReplyToStatusId: currentTweet.inReplyToStatusId,
             depth: depth,
         });
 
         if (!currentTweet) {
-            elizaLogger.debug("No current tweet found for thread building");
+            aiverseLogger.debug("No current tweet found for thread building");
             return;
         }
 
         // Stop if we've reached our reply limit
         if (depth >= maxReplies) {
-            elizaLogger.debug("Reached maximum reply depth", depth);
+            aiverseLogger.debug("Reached maximum reply depth", depth);
             return;
         }
 
@@ -101,14 +101,14 @@ export async function buildConversationThread(
         }
 
         if (visited.has(currentTweet.id)) {
-            elizaLogger.debug("Already visited tweet:", currentTweet.id);
+            aiverseLogger.debug("Already visited tweet:", currentTweet.id);
             return;
         }
 
         visited.add(currentTweet.id);
         thread.unshift(currentTweet);
 
-        elizaLogger.debug("Current thread state:", {
+        aiverseLogger.debug("Current thread state:", {
             length: thread.length,
             currentDepth: depth,
             tweetId: currentTweet.id,
@@ -116,7 +116,7 @@ export async function buildConversationThread(
 
         // If there's a parent tweet, fetch and process it
         if (currentTweet.inReplyToStatusId) {
-            elizaLogger.debug(
+            aiverseLogger.debug(
                 "Fetching parent tweet:",
                 currentTweet.inReplyToStatusId
             );
@@ -126,25 +126,25 @@ export async function buildConversationThread(
                 );
 
                 if (parentTweet) {
-                    elizaLogger.debug("Found parent tweet:", {
+                    aiverseLogger.debug("Found parent tweet:", {
                         id: parentTweet.id,
                         text: parentTweet.text?.slice(0, 50),
                     });
                     await processThread(parentTweet, depth + 1);
                 } else {
-                    elizaLogger.debug(
+                    aiverseLogger.debug(
                         "No parent tweet found for:",
                         currentTweet.inReplyToStatusId
                     );
                 }
             } catch (error) {
-                elizaLogger.error("Error fetching parent tweet:", {
+                aiverseLogger.error("Error fetching parent tweet:", {
                     tweetId: currentTweet.inReplyToStatusId,
                     error,
                 });
             }
         } else {
-            elizaLogger.debug(
+            aiverseLogger.debug(
                 "Reached end of reply chain at:",
                 currentTweet.id
             );
@@ -153,7 +153,7 @@ export async function buildConversationThread(
 
     await processThread(tweet, 0);
 
-    elizaLogger.debug("Final thread built:", {
+    aiverseLogger.debug("Final thread built:", {
         totalTweets: thread.length,
         tweetIds: thread.map((t) => ({
             id: t.id,
@@ -213,7 +213,7 @@ export async function sendTweet(
             );
         }
 
-        const cleanChunk = deduplicateMentions(chunk.trim())
+        const cleanChunk = deduplicateMentions(chunk.trim());
 
         const result = await client.requestQueue.add(async () =>
             isLongTweet
@@ -256,7 +256,7 @@ export async function sendTweet(
             sentTweets.push(finalTweet);
             previousTweetId = finalTweet.id;
         } else {
-            elizaLogger.error("Error sending tweet chunk:", {
+            aiverseLogger.error("Error sending tweet chunk:", {
                 chunk,
                 response: body,
             });
@@ -402,29 +402,29 @@ function splitSentencesAndWords(text: string, maxLength: number): string[] {
 
 function deduplicateMentions(paragraph: string) {
     // Regex to match mentions at the beginning of the string
-  const mentionRegex = /^@(\w+)(?:\s+@(\w+))*(\s+|$)/;
+    const mentionRegex = /^@(\w+)(?:\s+@(\w+))*(\s+|$)/;
 
-  // Find all matches
-  const matches = paragraph.match(mentionRegex);
+    // Find all matches
+    const matches = paragraph.match(mentionRegex);
 
-  if (!matches) {
-    return paragraph; // If no matches, return the original string
-  }
+    if (!matches) {
+        return paragraph; // If no matches, return the original string
+    }
 
-  // Extract mentions from the match groups
-  let mentions = matches.slice(0, 1)[0].trim().split(' ')
+    // Extract mentions from the match groups
+    let mentions = matches.slice(0, 1)[0].trim().split(" ");
 
-  // Deduplicate mentions
-  mentions = [...new Set(mentions)];
+    // Deduplicate mentions
+    mentions = [...new Set(mentions)];
 
-  // Reconstruct the string with deduplicated mentions
-  const uniqueMentionsString = mentions.join(' ');
+    // Reconstruct the string with deduplicated mentions
+    const uniqueMentionsString = mentions.join(" ");
 
-  // Find where the mentions end in the original string
-  const endOfMentions = paragraph.indexOf(matches[0]) + matches[0].length;
+    // Find where the mentions end in the original string
+    const endOfMentions = paragraph.indexOf(matches[0]) + matches[0].length;
 
-  // Construct the result by combining unique mentions with the rest of the string
-  return uniqueMentionsString + ' ' + paragraph.slice(endOfMentions);
+    // Construct the result by combining unique mentions with the rest of the string
+    return uniqueMentionsString + " " + paragraph.slice(endOfMentions);
 }
 
 function restoreUrls(

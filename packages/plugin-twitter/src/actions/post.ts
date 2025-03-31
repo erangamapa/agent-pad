@@ -4,13 +4,13 @@ import {
     Memory,
     State,
     composeContext,
-    elizaLogger,
+    aiverseLogger,
     ModelClass,
     generateObject,
     truncateToCompleteSentence,
     ModelProviderName,
     generateText,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { Scraper } from "agent-twitter-client";
 import { tweetTemplate } from "../templates";
 import { isTweetContent, TweetSchema } from "../types";
@@ -43,7 +43,7 @@ async function composeTweet(
             if (isTweetContent(tweetContentObject.object)) {
                 tweetContent = tweetContentObject.object.text.trim();
             } else {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Invalid tweet content from generateObject:",
                     tweetContentObject.object
                 );
@@ -52,7 +52,7 @@ async function composeTweet(
         } catch (error) {
             // If generateObject fails (e.g., for unsupported providers like hyperbolic),
             // fall back to generateText
-            elizaLogger.warn(
+            aiverseLogger.warn(
                 "Falling back to generateText due to error:",
                 error
             );
@@ -87,7 +87,7 @@ async function composeTweet(
 
         return tweetContent;
     } catch (error) {
-        elizaLogger.error("Error composing tweet:", error);
+        aiverseLogger.error("Error composing tweet:", error);
         throw error;
     }
 }
@@ -96,12 +96,12 @@ async function sendTweet(twitterClient: Scraper, content: string) {
     const result = await twitterClient.sendTweet(content);
 
     const body = await result.json();
-    elizaLogger.log("Tweet response:", body);
+    aiverseLogger.log("Tweet response:", body);
 
     // Check for Twitter API errors
     if (body.errors) {
         const error = body.errors[0];
-        elizaLogger.error(
+        aiverseLogger.error(
             `Twitter API error (${error.code}): ${error.message}`
         );
         return false;
@@ -109,7 +109,9 @@ async function sendTweet(twitterClient: Scraper, content: string) {
 
     // Check for successful tweet creation
     if (!body?.data?.create_tweet?.tweet_results?.result) {
-        elizaLogger.error("Failed to post tweet: No tweet result in response");
+        aiverseLogger.error(
+            "Failed to post tweet: No tweet result in response"
+        );
         return false;
     }
 
@@ -131,7 +133,7 @@ async function postTweet(
             const twitter2faSecret = runtime.getSetting("TWITTER_2FA_SECRET");
 
             if (!username || !password) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Twitter credentials not configured in environment"
                 );
                 return false;
@@ -139,13 +141,13 @@ async function postTweet(
             // Login with credentials
             await scraper.login(username, password, email, twitter2faSecret);
             if (!(await scraper.isLoggedIn())) {
-                elizaLogger.error("Failed to login to Twitter");
+                aiverseLogger.error("Failed to login to Twitter");
                 return false;
             }
         }
 
         // Send the tweet
-        elizaLogger.log("Attempting to send tweet:", content);
+        aiverseLogger.log("Attempting to send tweet:", content);
 
         try {
             if (content.length > DEFAULT_MAX_TWEET_LENGTH) {
@@ -167,7 +169,7 @@ async function postTweet(
         }
     } catch (error) {
         // Log the full error details
-        elizaLogger.error("Error posting tweet:", {
+        aiverseLogger.error("Error posting tweet:", {
             message: error.message,
             stack: error.stack,
             name: error.name,
@@ -192,7 +194,7 @@ export const postAction: Action = {
             const password = runtime.getSetting("TWITTER_PASSWORD");
             const email = runtime.getSetting("TWITTER_EMAIL");
             const hasCredentials = !!username && !!password && !!email;
-            elizaLogger.log(`Has Twitter credentials: ${hasCredentials}`);
+            aiverseLogger.log(`Has Twitter credentials: ${hasCredentials}`);
 
             if (!hasCredentials) {
                 return false;
@@ -200,14 +202,14 @@ export const postAction: Action = {
 
             // Check if the model provider is supported
             const modelProvider = runtime.modelProvider;
-            elizaLogger.log(`Current model provider: ${modelProvider}`);
+            aiverseLogger.log(`Current model provider: ${modelProvider}`);
 
             // Even if we're using Hyperbolic, we have a fallback mechanism in place
             // so we can return true for validation
 
             return true;
         } catch (error) {
-            elizaLogger.error("Error validating Twitter action:", error);
+            aiverseLogger.error("Error validating Twitter action:", error);
             return false;
         }
     },
@@ -218,15 +220,15 @@ export const postAction: Action = {
     ): Promise<boolean> => {
         try {
             // Log runtime model provider for debugging
-            elizaLogger.log(`Using model provider: ${runtime.modelProvider}`);
+            aiverseLogger.log(`Using model provider: ${runtime.modelProvider}`);
 
             // Generate tweet content using context
-            elizaLogger.log("Attempting to compose tweet...");
+            aiverseLogger.log("Attempting to compose tweet...");
             let tweetContent;
             try {
                 tweetContent = await composeTweet(runtime, message, state);
             } catch (composeError) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Error in composeTweet function:",
                     composeError
                 );
@@ -234,18 +236,18 @@ export const postAction: Action = {
             }
 
             if (!tweetContent) {
-                elizaLogger.error("No content generated for tweet");
+                aiverseLogger.error("No content generated for tweet");
                 return false;
             }
 
-            elizaLogger.log(`Generated tweet content: ${tweetContent}`);
+            aiverseLogger.log(`Generated tweet content: ${tweetContent}`);
 
             // Check for dry run mode - explicitly check for string "true"
             if (
                 process.env.TWITTER_DRY_RUN &&
                 process.env.TWITTER_DRY_RUN.toLowerCase() === "true"
             ) {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Dry run: would have posted tweet: ${tweetContent}`
                 );
                 return true;
@@ -255,11 +257,11 @@ export const postAction: Action = {
             try {
                 return await postTweet(runtime, tweetContent);
             } catch (postError) {
-                elizaLogger.error("Error in postTweet function:", postError);
+                aiverseLogger.error("Error in postTweet function:", postError);
                 return false;
             }
         } catch (error) {
-            elizaLogger.error("Error in post action:", {
+            aiverseLogger.error("Error in post action:", {
                 message: error.message,
                 stack: error.stack,
                 name: error.name,

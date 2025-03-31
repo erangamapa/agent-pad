@@ -1,5 +1,5 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
@@ -7,7 +7,7 @@ import {
     Memory,
     State,
     generateImage,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
@@ -31,7 +31,7 @@ export async function validateCloudinaryConfig(
     const apiSecret = runtime.getSetting("CLOUDINARY_API_SECRET");
 
     if (!cloudName || !apiKey || !apiSecret) {
-        elizaLogger.error(
+        aiverseLogger.error(
             "Missing Cloudinary configuration. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET."
         );
         return false;
@@ -52,17 +52,17 @@ export async function uploadToCloudinary(
     filename: string
 ): Promise<string> {
     try {
-        elizaLogger.log(`Uploading image to Cloudinary: ${filename}`);
+        aiverseLogger.log(`Uploading image to Cloudinary: ${filename}`);
         const result = await cloudinary.uploader.upload(filePath, {
             public_id: filename,
             overwrite: true,
             resource_type: "image",
         });
 
-        elizaLogger.log(`Cloudinary upload successful: ${result.secure_url}`);
+        aiverseLogger.log(`Cloudinary upload successful: ${result.secure_url}`);
         return result.secure_url;
     } catch (error) {
-        elizaLogger.error(`Cloudinary upload failed: ${error}`);
+        aiverseLogger.error(`Cloudinary upload failed: ${error}`);
         throw error;
     }
 }
@@ -95,9 +95,9 @@ export async function saveGeneratedImageAndUploadToCloudinary(imageResult: {
     // Optionally delete the local file after uploading to Cloudinary
     try {
         fs.unlinkSync(filepath);
-        elizaLogger.log(`Deleted local file: ${filepath}`);
+        aiverseLogger.log(`Deleted local file: ${filepath}`);
     } catch (error) {
-        elizaLogger.error(`Failed to delete local file: ${filepath}`, error);
+        aiverseLogger.error(`Failed to delete local file: ${filepath}`, error);
     }
 
     return cloudinaryUrl;
@@ -117,7 +117,7 @@ export function saveBase64Image(base64Data: string, filename: string): string {
     // Save file
     const filepath = `${dir}/${filename}.png`;
     fs.writeFileSync(filepath, base64Image, { encoding: "base64" });
-    elizaLogger.log(`Saved base64 image to: ${filepath}`);
+    aiverseLogger.log(`Saved base64 image to: ${filepath}`);
 
     return filepath;
 }
@@ -138,7 +138,7 @@ export async function saveHeuristImage(
 
     const filepath = `${dir}/${filename}.png`;
     fs.writeFileSync(filepath, buffer);
-    elizaLogger.log(`Saved image from URL to: ${filepath}`);
+    aiverseLogger.log(`Saved image from URL to: ${filepath}`);
 
     return filepath;
 }
@@ -219,7 +219,7 @@ export const generateNBABetSlip: Action = {
             });
             return true;
         } catch (error: any) {
-            elizaLogger.error("Error generating NBA bet slip:", error);
+            aiverseLogger.error("Error generating NBA bet slip:", error);
             callback({
                 text: "Sorry, I couldn't generate the bet slip image. Please try again later.",
             });

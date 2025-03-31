@@ -1,13 +1,13 @@
-import { composeContext } from "@elizaos/core";
-import { generateObjectArray } from "@elizaos/core";
-import { MemoryManager } from "@elizaos/core";
+import { composeContext } from "@aiverse/core";
+import { generateObjectArray } from "@aiverse/core";
+import { MemoryManager } from "@aiverse/core";
 import {
     ActionExample,
     IAgentRuntime,
     Memory,
     ModelClass,
     Evaluator,
-} from "@elizaos/core";
+} from "@aiverse/core";
 
 export const formatFacts = (facts: Memory[]) => {
     const messageStrings = facts

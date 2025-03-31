@@ -17,7 +17,7 @@ import {
 } from "./evaluators.ts";
 import { generateText } from "./generation.ts";
 import { formatGoalsAsString, getGoals } from "./goals.ts";
-import { elizaLogger } from "./index.ts";
+import { aiverseLogger } from "./index.ts";
 import knowledge from "./knowledge.ts";
 import { MemoryManager } from "./memory.ts";
 import { formatActors, formatMessages, getActorDetails } from "./messages.ts";
@@ -166,7 +166,7 @@ export class AgentRuntime implements IAgentRuntime {
         }
 
         if (this.memoryManagers.has(manager.tableName)) {
-            elizaLogger.warn(
+            aiverseLogger.warn(
                 `Memory manager ${manager.tableName} is already registered. Skipping registration.`
             );
             return;
@@ -182,7 +182,7 @@ export class AgentRuntime implements IAgentRuntime {
     getService<T extends Service>(service: ServiceType): T | null {
         const serviceInstance = this.services.get(service);
         if (!serviceInstance) {
-            elizaLogger.error(`Service ${service} not found`);
+            aiverseLogger.error(`Service ${service} not found`);
             return null;
         }
         return serviceInstance as T;
@@ -190,10 +190,10 @@ export class AgentRuntime implements IAgentRuntime {
 
     async registerService(service: Service): Promise<void> {
         const serviceType = service.serviceType;
-        elizaLogger.log("Registering service:", serviceType);
+        aiverseLogger.log("Registering service:", serviceType);
 
         if (this.services.has(serviceType)) {
-            elizaLogger.warn(
+            aiverseLogger.warn(
                 `Service ${serviceType} is already registered. Skipping registration.`
             );
             return;
@@ -201,7 +201,7 @@ export class AgentRuntime implements IAgentRuntime {
 
         // Add the service to the services map
         this.services.set(serviceType, service);
-        elizaLogger.success(`Service ${serviceType} registered successfully`);
+        aiverseLogger.success(`Service ${serviceType} registered successfully`);
     }
 
     /**
@@ -243,7 +243,7 @@ export class AgentRuntime implements IAgentRuntime {
         logging?: boolean;
         verifiableInferenceAdapter?: IVerifiableInferenceAdapter;
     }) {
-        elizaLogger.info("Initializing AgentRuntime with options:", {
+        aiverseLogger.info("Initializing AgentRuntime with options:", {
             character: opts.character?.name,
             modelProvider: opts.modelProvider,
             characterModelProvider: opts.character?.modelProvider,
@@ -275,7 +275,7 @@ export class AgentRuntime implements IAgentRuntime {
             this.ensureParticipantExists(this.agentId, this.agentId);
         });
 
-        elizaLogger.success(`Agent ID: ${this.agentId}`);
+        aiverseLogger.success(`Agent ID: ${this.agentId}`);
 
         this.fetch = (opts.fetch as typeof fetch) ?? this.fetch;
 
@@ -321,8 +321,8 @@ export class AgentRuntime implements IAgentRuntime {
 
         this.serverUrl = opts.serverUrl ?? this.serverUrl;
 
-        elizaLogger.info("Setting model provider...");
-        elizaLogger.info("Model Provider Selection:", {
+        aiverseLogger.info("Setting model provider...");
+        aiverseLogger.info("Model Provider Selection:", {
             characterModelProvider: this.character.modelProvider,
             optsModelProvider: opts.modelProvider,
             currentModelProvider: this.modelProvider,
@@ -340,8 +340,8 @@ export class AgentRuntime implements IAgentRuntime {
         this.imageModelProvider =
             this.character.imageModelProvider ?? this.modelProvider;
 
-        elizaLogger.info("Selected model provider:", this.modelProvider);
-        elizaLogger.info(
+        aiverseLogger.info("Selected model provider:", this.modelProvider);
+        aiverseLogger.info(
             "Selected image model provider:",
             this.imageModelProvider
         );
@@ -349,16 +349,16 @@ export class AgentRuntime implements IAgentRuntime {
         this.imageVisionModelProvider =
             this.character.imageVisionModelProvider ?? this.modelProvider;
 
-        elizaLogger.info("Selected model provider:", this.modelProvider);
-        elizaLogger.info(
+        aiverseLogger.info("Selected model provider:", this.modelProvider);
+        aiverseLogger.info(
             "Selected image model provider:",
             this.imageVisionModelProvider
         );
 
         // Validate model provider
         if (!Object.values(ModelProviderName).includes(this.modelProvider)) {
-            elizaLogger.error("Invalid model provider:", this.modelProvider);
-            elizaLogger.error(
+            aiverseLogger.error("Invalid model provider:", this.modelProvider);
+            aiverseLogger.error(
                 "Available providers:",
                 Object.values(ModelProviderName)
             );
@@ -366,7 +366,9 @@ export class AgentRuntime implements IAgentRuntime {
         }
 
         if (!this.serverUrl) {
-            elizaLogger.warn("No serverUrl provided, defaulting to localhost");
+            aiverseLogger.warn(
+                "No serverUrl provided, defaulting to localhost"
+            );
         }
 
         this.token = opts.token;
@@ -414,11 +416,11 @@ export class AgentRuntime implements IAgentRuntime {
             try {
                 await service.initialize(this);
                 this.services.set(serviceType, service);
-                elizaLogger.success(
+                aiverseLogger.success(
                     `Service ${serviceType} initialized successfully`
                 );
             } catch (error) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     `Failed to initialize service ${serviceType}:`,
                     error
                 );
@@ -453,7 +455,7 @@ export class AgentRuntime implements IAgentRuntime {
     }
 
     async stop() {
-        elizaLogger.debug("runtime::stop - character", this.character);
+        aiverseLogger.debug("runtime::stop - character", this.character);
         // stop services, they don't have a stop function
         // just initialize
 
@@ -464,7 +466,7 @@ export class AgentRuntime implements IAgentRuntime {
         // client have a start
         for (const cStr in this.clients) {
             const c = this.clients[cStr];
-            elizaLogger.log(
+            aiverseLogger.log(
                 "runtime::stop - requesting",
                 cStr,
                 "client stop for",
@@ -491,7 +493,7 @@ export class AgentRuntime implements IAgentRuntime {
                 continue;
             }
 
-            elizaLogger.info(
+            aiverseLogger.info(
                 "Processing knowledge for ",
                 this.character.name,
                 " - ",
@@ -553,7 +555,7 @@ export class AgentRuntime implements IAgentRuntime {
                             "knowledge",
                             contentItem
                         );
-                        elizaLogger.info(
+                        aiverseLogger.info(
                             "Attempting to read file from:",
                             filePath
                         );
@@ -579,7 +581,7 @@ export class AgentRuntime implements IAgentRuntime {
                             const existingContent =
                                 existingKnowledge[0].content.text;
                             if (existingContent === content) {
-                                elizaLogger.info(
+                                aiverseLogger.info(
                                     `File ${contentItem} unchanged, skipping`
                                 );
                                 continue;
@@ -596,7 +598,7 @@ export class AgentRuntime implements IAgentRuntime {
                             }
                         }
 
-                        elizaLogger.info(
+                        aiverseLogger.info(
                             `Successfully read ${fileExtension.toUpperCase()} file content for`,
                             this.character.name,
                             "-",
@@ -611,7 +613,7 @@ export class AgentRuntime implements IAgentRuntime {
                         });
                     } catch (error: any) {
                         hasError = true;
-                        elizaLogger.error(
+                        aiverseLogger.error(
                             `Failed to read knowledge file ${contentItem}. Error details:`,
                             error?.message || error || "Unknown error"
                         );
@@ -619,7 +621,7 @@ export class AgentRuntime implements IAgentRuntime {
                     }
                 } else {
                     // Handle direct knowledge string
-                    elizaLogger.info(
+                    aiverseLogger.info(
                         "Processing direct knowledge for",
                         this.character.name,
                         "-",
@@ -633,7 +635,7 @@ export class AgentRuntime implements IAgentRuntime {
                         });
 
                     if (existingKnowledge.length > 0) {
-                        elizaLogger.info(
+                        aiverseLogger.info(
                             `Direct knowledge ${knowledgeId} already exists, skipping`
                         );
                         continue;
@@ -652,7 +654,7 @@ export class AgentRuntime implements IAgentRuntime {
                 }
             } catch (error: any) {
                 hasError = true;
-                elizaLogger.error(
+                aiverseLogger.error(
                     `Error processing knowledge item ${item}:`,
                     error?.message || error || "Unknown error"
                 );
@@ -661,7 +663,7 @@ export class AgentRuntime implements IAgentRuntime {
         }
 
         if (hasError) {
-            elizaLogger.warn(
+            aiverseLogger.warn(
                 "Some knowledge items failed to process, but continuing with available knowledge"
             );
         }
@@ -698,7 +700,7 @@ export class AgentRuntime implements IAgentRuntime {
      * @param action The action to register.
      */
     registerAction(action: Action) {
-        elizaLogger.success(`Registering action: ${action.name}`);
+        aiverseLogger.success(`Registering action: ${action.name}`);
         this.actions.push(action);
     }
 
@@ -731,7 +733,7 @@ export class AgentRuntime implements IAgentRuntime {
     ): Promise<void> {
         for (const response of responses) {
             if (!response.content?.action) {
-                elizaLogger.warn("No action found in the response content.");
+                aiverseLogger.warn("No action found in the response content.");
                 continue;
             }
 
@@ -739,7 +741,7 @@ export class AgentRuntime implements IAgentRuntime {
                 .toLowerCase()
                 .replace("_", "");
 
-            elizaLogger.success(`Normalized action: ${normalizedAction}`);
+            aiverseLogger.success(`Normalized action: ${normalizedAction}`);
 
             let action = this.actions.find(
                 (a: { name: string }) =>
@@ -753,7 +755,7 @@ export class AgentRuntime implements IAgentRuntime {
             );
 
             if (!action) {
-                elizaLogger.info("Attempting to find action in similes.");
+                aiverseLogger.info("Attempting to find action in similes.");
                 for (const _action of this.actions) {
                     const simileAction = _action.similes.find(
                         (simile) =>
@@ -767,7 +769,7 @@ export class AgentRuntime implements IAgentRuntime {
                     );
                     if (simileAction) {
                         action = _action;
-                        elizaLogger.success(
+                        aiverseLogger.success(
                             `Action found in similes: ${action.name}`
                         );
                         break;
@@ -776,7 +778,7 @@ export class AgentRuntime implements IAgentRuntime {
             }
 
             if (!action) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "No action found for",
                     response.content.action
                 );
@@ -784,17 +786,17 @@ export class AgentRuntime implements IAgentRuntime {
             }
 
             if (!action.handler) {
-                elizaLogger.error(`Action ${action.name} has no handler.`);
+                aiverseLogger.error(`Action ${action.name} has no handler.`);
                 continue;
             }
 
             try {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Executing handler for action: ${action.name}`
                 );
                 await action.handler(this, message, state, {}, callback);
             } catch (error) {
-                elizaLogger.error(error);
+                aiverseLogger.error(error);
             }
         }
     }
@@ -815,7 +817,7 @@ export class AgentRuntime implements IAgentRuntime {
     ) {
         const evaluatorPromises = this.evaluators.map(
             async (evaluator: Evaluator) => {
-                elizaLogger.log("Evaluating", evaluator.name);
+                aiverseLogger.log("Evaluating", evaluator.name);
                 if (!evaluator.handler) {
                     return null;
                 }
@@ -909,7 +911,7 @@ export class AgentRuntime implements IAgentRuntime {
                 email: email || (userName || "Bot") + "@" + source || "Unknown", // Temporary
                 details: { summary: "" },
             });
-            elizaLogger.success(`User ${userName} created successfully.`);
+            aiverseLogger.success(`User ${userName} created successfully.`);
         }
     }
 
@@ -919,11 +921,11 @@ export class AgentRuntime implements IAgentRuntime {
         if (!participants.includes(userId)) {
             await this.databaseAdapter.addParticipant(userId, roomId);
             if (userId === this.agentId) {
-                elizaLogger.log(
+                aiverseLogger.log(
                     `Agent ${this.character.name} linked to room ${roomId} successfully.`
                 );
             } else {
-                elizaLogger.log(
+                aiverseLogger.log(
                     `User ${userId} linked to room ${roomId} successfully.`
                 );
             }
@@ -970,7 +972,7 @@ export class AgentRuntime implements IAgentRuntime {
         const room = await this.databaseAdapter.getRoom(roomId);
         if (!room) {
             await this.databaseAdapter.createRoom(roomId);
-            elizaLogger.log(`Room ${roomId} created successfully.`);
+            aiverseLogger.log(`Room ${roomId} created successfully.`);
         }
     }
 

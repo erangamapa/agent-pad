@@ -1,4 +1,4 @@
-import { ActionExample } from "@elizaos/core";
+import { ActionExample } from "@aiverse/core";
 
 export const getNBAMoneyLineBettingMarketsExamples: ActionExample[][] = [
     [

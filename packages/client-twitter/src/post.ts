@@ -9,12 +9,12 @@ import {
     TemplateType,
     UUID,
     truncateToCompleteSentence,
-} from "@elizaos/core";
-import { elizaLogger } from "@elizaos/core";
+} from "@aiverse/core";
+import { aiverseLogger } from "@aiverse/core";
 import { ClientBase } from "./base.ts";
-import { postActionResponseFooter } from "@elizaos/core";
-import { generateTweetActions } from "@elizaos/core";
-import { IImageDescriptionService, ServiceType } from "@elizaos/core";
+import { postActionResponseFooter } from "@aiverse/core";
+import { generateTweetActions } from "@aiverse/core";
+import { IImageDescriptionService, ServiceType } from "@aiverse/core";
 import { buildConversationThread } from "./utils.ts";
 import { twitterMessageHandlerTemplate } from "./interactions.ts";
 import { DEFAULT_MAX_TWEET_LENGTH } from "./environment.ts";
@@ -25,8 +25,8 @@ import {
     TextChannel,
     Partials,
 } from "discord.js";
-import { State } from "@elizaos/core";
-import { ActionResponse } from "@elizaos/core";
+import { State } from "@aiverse/core";
+import { ActionResponse } from "@aiverse/core";
 
 const MAX_TIMELINES_TO_FETCH = 15;
 
@@ -109,34 +109,34 @@ export class TwitterPostClient {
         this.isDryRun = this.client.twitterConfig.TWITTER_DRY_RUN;
 
         // Log configuration on initialization
-        elizaLogger.log("Twitter Client Configuration:");
-        elizaLogger.log(`- Username: ${this.twitterUsername}`);
-        elizaLogger.log(
+        aiverseLogger.log("Twitter Client Configuration:");
+        aiverseLogger.log(`- Username: ${this.twitterUsername}`);
+        aiverseLogger.log(
             `- Dry Run Mode: ${this.isDryRun ? "enabled" : "disabled"}`
         );
-        elizaLogger.log(
+        aiverseLogger.log(
             `- Post Interval: ${this.client.twitterConfig.POST_INTERVAL_MIN}-${this.client.twitterConfig.POST_INTERVAL_MAX} minutes`
         );
-        elizaLogger.log(
+        aiverseLogger.log(
             `- Action Processing: ${this.client.twitterConfig.ENABLE_ACTION_PROCESSING ? "enabled" : "disabled"}`
         );
-        elizaLogger.log(
+        aiverseLogger.log(
             `- Action Interval: ${this.client.twitterConfig.ACTION_INTERVAL} minutes`
         );
-        elizaLogger.log(
+        aiverseLogger.log(
             `- Post Immediately: ${this.client.twitterConfig.POST_IMMEDIATELY ? "enabled" : "disabled"}`
         );
-        elizaLogger.log(
+        aiverseLogger.log(
             `- Search Enabled: ${this.client.twitterConfig.TWITTER_SEARCH_ENABLE ? "enabled" : "disabled"}`
         );
 
         const targetUsers = this.client.twitterConfig.TWITTER_TARGET_USERS;
         if (targetUsers) {
-            elizaLogger.log(`- Target Users: ${targetUsers}`);
+            aiverseLogger.log(`- Target Users: ${targetUsers}`);
         }
 
         if (this.isDryRun) {
-            elizaLogger.log(
+            aiverseLogger.log(
                 "Twitter client initialized in dry run mode - no actual tweets should be posted"
             );
         }
@@ -188,7 +188,7 @@ export class TwitterPostClient {
         this.discordClientForApproval.once(
             Events.ClientReady,
             (readyClient) => {
-                elizaLogger.log(
+                aiverseLogger.log(
                     `Discord bot is ready as ${readyClient.user.tag}!`
                 );
 
@@ -199,7 +199,7 @@ export class TwitterPostClient {
                 // - Read Messages/View Channels
                 // - Read Message History
 
-                elizaLogger.log(
+                aiverseLogger.log(
                     `Use this link to properly invite the Twitter Post Approval Discord bot: ${invite}`
                 );
             }
@@ -239,7 +239,9 @@ export class TwitterPostClient {
                 generateNewTweetLoop(); // Set up next iteration
             }, delay);
 
-            elizaLogger.log(`Next tweet scheduled in ${randomMinutes} minutes`);
+            aiverseLogger.log(
+                `Next tweet scheduled in ${randomMinutes} minutes`
+            );
         };
 
         const processActionsLoop = async () => {
@@ -249,8 +251,8 @@ export class TwitterPostClient {
                 try {
                     const results = await this.processTweetActions();
                     if (results) {
-                        elizaLogger.log(`Processed ${results.length} tweets`);
-                        elizaLogger.log(
+                        aiverseLogger.log(`Processed ${results.length} tweets`);
+                        aiverseLogger.log(
                             `Next action processing scheduled in ${actionInterval} minutes`
                         );
                         // Wait for the full interval before next processing
@@ -260,7 +262,7 @@ export class TwitterPostClient {
                         );
                     }
                 } catch (error) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         "Error in action processing loop:",
                         error
                     );
@@ -276,11 +278,11 @@ export class TwitterPostClient {
 
         // Only start tweet generation loop if not in dry run mode
         generateNewTweetLoop();
-        elizaLogger.log("Tweet generation loop started");
+        aiverseLogger.log("Tweet generation loop started");
 
         if (this.client.twitterConfig.ENABLE_ACTION_PROCESSING) {
             processActionsLoop().catch((error) => {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Fatal error in process actions loop:",
                     error
                 );
@@ -342,7 +344,7 @@ export class TwitterPostClient {
         await client.cacheTweet(tweet);
 
         // Log the posted tweet
-        elizaLogger.log(`Tweet posted:\n ${tweet.permanentUrl}`);
+        aiverseLogger.log(`Tweet posted:\n ${tweet.permanentUrl}`);
 
         // Ensure the room and participant exist
         await runtime.ensureRoomExists(roomId);
@@ -412,7 +414,7 @@ export class TwitterPostClient {
             }
             return body.data.create_tweet.tweet_results.result;
         } catch (error) {
-            elizaLogger.error("Error sending standard Tweet:", error);
+            aiverseLogger.error("Error sending standard Tweet:", error);
             throw error;
         }
     }
@@ -426,7 +428,7 @@ export class TwitterPostClient {
         twitterUsername: string
     ) {
         try {
-            elizaLogger.log(`Posting new tweet:\n`);
+            aiverseLogger.log(`Posting new tweet:\n`);
 
             let result;
 
@@ -450,7 +452,7 @@ export class TwitterPostClient {
                 newTweetContent
             );
         } catch (error) {
-            elizaLogger.error("Error sending tweet:", error);
+            aiverseLogger.error("Error sending tweet:", error);
         }
     }
 
@@ -458,7 +460,7 @@ export class TwitterPostClient {
      * Generates and posts a new tweet. If isDryRun is true, only logs what would have been posted.
      */
     async generateNewTweet() {
-        elizaLogger.log("Generating new tweet");
+        aiverseLogger.log("Generating new tweet");
 
         try {
             const roomId = stringToUuid(
@@ -495,7 +497,7 @@ export class TwitterPostClient {
                     twitterPostTemplate,
             });
 
-            elizaLogger.debug("generate post prompt:\n" + context);
+            aiverseLogger.debug("generate post prompt:\n" + context);
 
             const newTweetContent = await generateText({
                 runtime: this.runtime,
@@ -526,7 +528,7 @@ export class TwitterPostClient {
             }
 
             if (!cleanedContent) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     "Failed to extract valid content from response:",
                     {
                         rawResponse: newTweetContent,
@@ -554,7 +556,7 @@ export class TwitterPostClient {
             cleanedContent = removeQuotes(fixNewLines(cleanedContent));
 
             if (this.isDryRun) {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Dry run: would have posted tweet: ${cleanedContent}`
                 );
                 return;
@@ -563,7 +565,7 @@ export class TwitterPostClient {
             try {
                 if (this.approvalRequired) {
                     // Send for approval instead of posting directly
-                    elizaLogger.log(
+                    aiverseLogger.log(
                         `Sending Tweet For Approval:\n ${cleanedContent}`
                     );
                     await this.sendForApproval(
@@ -571,9 +573,9 @@ export class TwitterPostClient {
                         roomId,
                         newTweetContent
                     );
-                    elizaLogger.log("Tweet sent for approval");
+                    aiverseLogger.log("Tweet sent for approval");
                 } else {
-                    elizaLogger.log(`Posting new tweet:\n ${cleanedContent}`);
+                    aiverseLogger.log(`Posting new tweet:\n ${cleanedContent}`);
                     this.postTweet(
                         this.runtime,
                         this.client,
@@ -584,10 +586,10 @@ export class TwitterPostClient {
                     );
                 }
             } catch (error) {
-                elizaLogger.error("Error sending tweet:", error);
+                aiverseLogger.error("Error sending tweet:", error);
             }
         } catch (error) {
-            elizaLogger.error("Error generating new tweet:", error);
+            aiverseLogger.error("Error generating new tweet:", error);
         }
     }
 
@@ -611,7 +613,7 @@ export class TwitterPostClient {
             context: options?.context || context,
             modelClass: ModelClass.SMALL,
         });
-        elizaLogger.debug("generate tweet content response:\n" + response);
+        aiverseLogger.debug("generate tweet content response:\n" + response);
 
         // First clean up any markdown and newlines
         const cleanedResponse = response
@@ -639,7 +641,7 @@ export class TwitterPostClient {
             error.linted = true; // make linter happy since catch needs a variable
 
             // If JSON parsing fails, treat as plain text
-            elizaLogger.debug("Response is not JSON, treating as plain text");
+            aiverseLogger.debug("Response is not JSON, treating as plain text");
         }
 
         // If not JSON or no valid content found, clean the raw text
@@ -668,7 +670,7 @@ export class TwitterPostClient {
      */
     private async processTweetActions() {
         if (this.isProcessing) {
-            elizaLogger.log("Already processing tweet actions, skipping");
+            aiverseLogger.log("Already processing tweet actions, skipping");
             return null;
         }
 
@@ -676,7 +678,7 @@ export class TwitterPostClient {
             this.isProcessing = true;
             this.lastProcessTime = Date.now();
 
-            elizaLogger.log("Processing tweet actions");
+            aiverseLogger.log("Processing tweet actions");
 
             await this.runtime.ensureUserExists(
                 this.runtime.agentId,
@@ -700,7 +702,7 @@ export class TwitterPostClient {
                             stringToUuid(tweet.id + "-" + this.runtime.agentId)
                         );
                     if (memory) {
-                        elizaLogger.log(
+                        aiverseLogger.log(
                             `Already processed tweet ID: ${tweet.id}`
                         );
                         continue;
@@ -738,7 +740,7 @@ export class TwitterPostClient {
                     });
 
                     if (!actionResponse) {
-                        elizaLogger.log(
+                        aiverseLogger.log(
                             `No valid actions generated for tweet ${tweet.id}`
                         );
                         continue;
@@ -750,7 +752,7 @@ export class TwitterPostClient {
                         roomId: roomId,
                     });
                 } catch (error) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         `Error processing tweet ${tweet.id}:`,
                         error
                     );
@@ -789,7 +791,7 @@ export class TwitterPostClient {
 
             return this.processTimelineActions(sortedTimelines); // Return results array to indicate completion
         } catch (error) {
-            elizaLogger.error("Error in processTweetActions:", error);
+            aiverseLogger.error("Error in processTweetActions:", error);
             throw error;
         } finally {
             this.isProcessing = false;
@@ -826,7 +828,7 @@ export class TwitterPostClient {
                 // Execute actions
                 if (actionResponse.like) {
                     if (this.isDryRun) {
-                        elizaLogger.info(
+                        aiverseLogger.info(
                             `Dry run: would have liked tweet ${tweet.id}`
                         );
                         executedActions.push("like (dry run)");
@@ -834,9 +836,9 @@ export class TwitterPostClient {
                         try {
                             await this.client.twitterClient.likeTweet(tweet.id);
                             executedActions.push("like");
-                            elizaLogger.log(`Liked tweet ${tweet.id}`);
+                            aiverseLogger.log(`Liked tweet ${tweet.id}`);
                         } catch (error) {
-                            elizaLogger.error(
+                            aiverseLogger.error(
                                 `Error liking tweet ${tweet.id}:`,
                                 error
                             );
@@ -846,7 +848,7 @@ export class TwitterPostClient {
 
                 if (actionResponse.retweet) {
                     if (this.isDryRun) {
-                        elizaLogger.info(
+                        aiverseLogger.info(
                             `Dry run: would have retweeted tweet ${tweet.id}`
                         );
                         executedActions.push("retweet (dry run)");
@@ -854,9 +856,9 @@ export class TwitterPostClient {
                         try {
                             await this.client.twitterClient.retweet(tweet.id);
                             executedActions.push("retweet");
-                            elizaLogger.log(`Retweeted tweet ${tweet.id}`);
+                            aiverseLogger.log(`Retweeted tweet ${tweet.id}`);
                         } catch (error) {
-                            elizaLogger.error(
+                            aiverseLogger.error(
                                 `Error retweeting tweet ${tweet.id}:`,
                                 error
                             );
@@ -881,7 +883,7 @@ export class TwitterPostClient {
                         // Generate image descriptions if present
                         const imageDescriptions = [];
                         if (tweet.photos?.length > 0) {
-                            elizaLogger.log(
+                            aiverseLogger.log(
                                 "Processing images in tweet for context"
                             );
                             for (const photo of tweet.photos) {
@@ -906,7 +908,7 @@ export class TwitterPostClient {
                                     quotedContent = `\nQuoted Tweet from @${quotedTweet.username}:\n${quotedTweet.text}`;
                                 }
                             } catch (error) {
-                                elizaLogger.error(
+                                aiverseLogger.error(
                                     "Error fetching quoted tweet:",
                                     error
                                 );
@@ -951,19 +953,19 @@ export class TwitterPostClient {
                         );
 
                         if (!quoteContent) {
-                            elizaLogger.error(
+                            aiverseLogger.error(
                                 "Failed to generate valid quote tweet content"
                             );
                             return;
                         }
 
-                        elizaLogger.log(
+                        aiverseLogger.log(
                             "Generated quote tweet content:",
                             quoteContent
                         );
                         // Check for dry run mode
                         if (this.isDryRun) {
-                            elizaLogger.info(
+                            aiverseLogger.info(
                                 `Dry run: A quote tweet for tweet ID ${tweet.id} would have been posted with the following content: "${quoteContent}".`
                             );
                             executedActions.push("quote (dry run)");
@@ -982,7 +984,7 @@ export class TwitterPostClient {
                             if (
                                 body?.data?.create_tweet?.tweet_results?.result
                             ) {
-                                elizaLogger.log(
+                                aiverseLogger.log(
                                     "Successfully posted quote tweet"
                                 );
                                 executedActions.push("quote");
@@ -993,14 +995,14 @@ export class TwitterPostClient {
                                     `Context:\n${enrichedState}\n\nGenerated Quote:\n${quoteContent}`
                                 );
                             } else {
-                                elizaLogger.error(
+                                aiverseLogger.error(
                                     "Quote tweet creation failed:",
                                     body
                                 );
                             }
                         }
                     } catch (error) {
-                        elizaLogger.error(
+                        aiverseLogger.error(
                             "Error in quote tweet generation:",
                             error
                         );
@@ -1015,7 +1017,7 @@ export class TwitterPostClient {
                             executedActions
                         );
                     } catch (error) {
-                        elizaLogger.error(
+                        aiverseLogger.error(
                             `Error replying to tweet ${tweet.id}:`,
                             error
                         );
@@ -1059,7 +1061,10 @@ export class TwitterPostClient {
                     executedActions,
                 });
             } catch (error) {
-                elizaLogger.error(`Error processing tweet ${tweet.id}:`, error);
+                aiverseLogger.error(
+                    `Error processing tweet ${tweet.id}:`,
+                    error
+                );
                 continue;
             }
         }
@@ -1089,7 +1094,7 @@ export class TwitterPostClient {
             // Generate image descriptions if present
             const imageDescriptions = [];
             if (tweet.photos?.length > 0) {
-                elizaLogger.log("Processing images in tweet for context");
+                aiverseLogger.log("Processing images in tweet for context");
                 for (const photo of tweet.photos) {
                     const description = await this.runtime
                         .getService<IImageDescriptionService>(
@@ -1112,7 +1117,7 @@ export class TwitterPostClient {
                         quotedContent = `\nQuoted Tweet from @${quotedTweet.username}:\n${quotedTweet.text}`;
                     }
                 } catch (error) {
-                    elizaLogger.error("Error fetching quoted tweet:", error);
+                    aiverseLogger.error("Error fetching quoted tweet:", error);
                 }
             }
 
@@ -1147,19 +1152,19 @@ export class TwitterPostClient {
             });
 
             if (!replyText) {
-                elizaLogger.error("Failed to generate valid reply content");
+                aiverseLogger.error("Failed to generate valid reply content");
                 return;
             }
 
             if (this.isDryRun) {
-                elizaLogger.info(
+                aiverseLogger.info(
                     `Dry run: reply to tweet ${tweet.id} would have been: ${replyText}`
                 );
                 executedActions.push("reply (dry run)");
                 return;
             }
 
-            elizaLogger.debug("Final reply text to be sent:", replyText);
+            aiverseLogger.debug("Final reply text to be sent:", replyText);
 
             let result;
 
@@ -1178,7 +1183,7 @@ export class TwitterPostClient {
             }
 
             if (result) {
-                elizaLogger.log("Successfully posted reply tweet");
+                aiverseLogger.log("Successfully posted reply tweet");
                 executedActions.push("reply");
 
                 // Cache generation context for debugging
@@ -1187,10 +1192,10 @@ export class TwitterPostClient {
                     `Context:\n${enrichedState}\n\nGenerated Reply:\n${replyText}`
                 );
             } else {
-                elizaLogger.error("Tweet reply creation failed");
+                aiverseLogger.error("Tweet reply creation failed");
             }
         } catch (error) {
-            elizaLogger.error("Error in handleTextOnlyReply:", error);
+            aiverseLogger.error("Error in handleTextOnlyReply:", error);
         }
     }
 
@@ -1259,7 +1264,7 @@ export class TwitterPostClient {
 
             return message.id;
         } catch (error) {
-            elizaLogger.error(
+            aiverseLogger.error(
                 "Error Sending Twitter Post Approval Request:",
                 error
             );
@@ -1276,10 +1281,10 @@ export class TwitterPostClient {
                 this.discordApprovalChannelId
             );
 
-            elizaLogger.log(`channel ${JSON.stringify(channel)}`);
+            aiverseLogger.log(`channel ${JSON.stringify(channel)}`);
 
             if (!(channel instanceof TextChannel)) {
-                elizaLogger.error("Invalid approval channel");
+                aiverseLogger.error("Invalid approval channel");
                 return "PENDING";
             }
 
@@ -1316,7 +1321,7 @@ export class TwitterPostClient {
 
             return "PENDING";
         } catch (error) {
-            elizaLogger.error("Error checking approval status:", error);
+            aiverseLogger.error("Error checking approval status:", error);
             return "PENDING";
         }
     }
@@ -1344,7 +1349,7 @@ export class TwitterPostClient {
     }
 
     private async handlePendingTweet() {
-        elizaLogger.log("Checking Pending Tweets...");
+        aiverseLogger.log("Checking Pending Tweets...");
         const pendingTweetsKey = `twitter/${this.client.profile.username}/pendingTweet`;
         const pendingTweets =
             (await this.runtime.cacheManager.get<PendingTweet[]>(
@@ -1357,7 +1362,7 @@ export class TwitterPostClient {
                 Date.now() - pendingTweet.timestamp > 24 * 60 * 60 * 1000;
 
             if (isExpired) {
-                elizaLogger.log("Pending tweet expired, cleaning up");
+                aiverseLogger.log("Pending tweet expired, cleaning up");
 
                 // Notify on Discord about expiration
                 try {
@@ -1374,7 +1379,7 @@ export class TwitterPostClient {
                         );
                     }
                 } catch (error) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         "Error sending expiration notification:",
                         error
                     );
@@ -1385,12 +1390,12 @@ export class TwitterPostClient {
             }
 
             // Check approval status
-            elizaLogger.log("Checking approval status...");
+            aiverseLogger.log("Checking approval status...");
             const approvalStatus: PendingTweetApprovalStatus =
                 await this.checkApprovalStatus(pendingTweet.discordMessageId);
 
             if (approvalStatus === "APPROVED") {
-                elizaLogger.log("Tweet Approved, Posting");
+                aiverseLogger.log("Tweet Approved, Posting");
                 await this.postTweet(
                     this.runtime,
                     this.client,
@@ -1415,7 +1420,7 @@ export class TwitterPostClient {
                         );
                     }
                 } catch (error) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         "Error sending post notification:",
                         error
                     );
@@ -1423,7 +1428,7 @@ export class TwitterPostClient {
 
                 await this.cleanupPendingTweet(pendingTweet.discordMessageId);
             } else if (approvalStatus === "REJECTED") {
-                elizaLogger.log("Tweet Rejected, Cleaning Up");
+                aiverseLogger.log("Tweet Rejected, Cleaning Up");
                 await this.cleanupPendingTweet(pendingTweet.discordMessageId);
                 // Notify about Rejection of Tweet
                 try {
@@ -1440,7 +1445,7 @@ export class TwitterPostClient {
                         );
                     }
                 } catch (error) {
-                    elizaLogger.error(
+                    aiverseLogger.error(
                         "Error sending rejection notification:",
                         error
                     );

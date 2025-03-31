@@ -2,11 +2,11 @@ import { Message } from "@telegraf/types";
 import { Context, Telegraf } from "telegraf";
 import {
     composeContext,
-    elizaLogger,
+    aiverseLogger,
     ServiceType,
     composeRandomUser,
-} from "@elizaos/core";
-import { getEmbeddingZeroVector } from "@elizaos/core";
+} from "@aiverse/core";
+import { getEmbeddingZeroVector } from "@aiverse/core";
 import {
     Content,
     HandlerCallback,
@@ -17,11 +17,11 @@ import {
     State,
     UUID,
     Media,
-} from "@elizaos/core";
-import { stringToUuid } from "@elizaos/core";
+} from "@aiverse/core";
+import { stringToUuid } from "@aiverse/core";
 
-import { generateMessageResponse, generateShouldRespond } from "@elizaos/core";
-import { messageCompletionFooter, shouldRespondFooter } from "@elizaos/core";
+import { generateMessageResponse, generateShouldRespond } from "@aiverse/core";
+import { messageCompletionFooter, shouldRespondFooter } from "@aiverse/core";
 
 import { cosineSimilarity, escapeMarkdown } from "./utils";
 import {
@@ -164,7 +164,7 @@ export class MessageManager {
         this.runtime = runtime;
 
         this._initializeTeamMemberUsernames().catch((error) =>
-            elizaLogger.error(
+            aiverseLogger.error(
                 "Error initializing team member usernames:",
                 error
             )
@@ -183,12 +183,12 @@ export class MessageManager {
                 const chat = await this.bot.telegram.getChat(id);
                 if ("username" in chat && chat.username) {
                     this.teamMemberUsernames.set(id, chat.username);
-                    elizaLogger.info(
+                    aiverseLogger.info(
                         `Cached username for team member ${id}: ${chat.username}`
                     );
                 }
             } catch (error) {
-                elizaLogger.error(
+                aiverseLogger.error(
                     `Error getting username for team member ${id}:`,
                     error
                 );
@@ -427,7 +427,7 @@ export class MessageManager {
         try {
             let imageUrl: string | null = null;
 
-            elizaLogger.info(`Telegram Message: ${message}`);
+            aiverseLogger.info(`Telegram Message: ${message}`);
 
             if ("photo" in message && message.photo?.length > 0) {
                 const photo = message.photo[message.photo.length - 1];
@@ -478,7 +478,7 @@ export class MessageManager {
             "text" in message &&
             message.text?.includes(`@${this.bot.botInfo?.username}`)
         ) {
-            elizaLogger.info(`Bot mentioned`);
+            aiverseLogger.info(`Bot mentioned`);
             return true;
         }
 
@@ -680,9 +680,17 @@ export class MessageManager {
             content.attachments.map(async (attachment: Media) => {
                 if (attachment.contentType === "image/gif") {
                     // Handle GIFs specifically
-                    await this.sendAnimation(ctx, attachment.url, attachment.description);
+                    await this.sendAnimation(
+                        ctx,
+                        attachment.url,
+                        attachment.description
+                    );
                 } else if (attachment.contentType.startsWith("image")) {
-                    await this.sendImage(ctx, attachment.url, attachment.description);
+                    await this.sendImage(
+                        ctx,
+                        attachment.url,
+                        attachment.description
+                    );
                 }
             });
         } else {
@@ -740,9 +748,9 @@ export class MessageManager {
                 );
             }
 
-            elizaLogger.info(`Image sent successfully: ${imagePath}`);
+            aiverseLogger.info(`Image sent successfully: ${imagePath}`);
         } catch (error) {
-            elizaLogger.error("Error sending image:", error);
+            aiverseLogger.error("Error sending image:", error);
         }
     }
 
@@ -776,9 +784,9 @@ export class MessageManager {
                 );
             }
 
-            elizaLogger.info(`Animation sent successfully: ${animationPath}`);
+            aiverseLogger.info(`Animation sent successfully: ${animationPath}`);
         } catch (error) {
-            elizaLogger.error("Error sending animation:", error);
+            aiverseLogger.error("Error sending animation:", error);
         }
     }
 
@@ -1164,8 +1172,8 @@ export class MessageManager {
 
             await this.runtime.evaluate(memory, state, shouldRespond, callback);
         } catch (error) {
-            elizaLogger.error("❌ Error handling message:", error);
-            elizaLogger.error("Error sending message:", error);
+            aiverseLogger.error("❌ Error handling message:", error);
+            aiverseLogger.error("Error sending message:", error);
         }
     }
 }

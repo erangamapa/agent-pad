@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { queryRulesWithLLM } from "../services";
 
 /**
@@ -56,7 +56,7 @@ const getConversationContext = (
         // In a real implementation, we would extract actual conversation history here
         // from runtime.getState() or similar methods, depending on the runtime API
     } catch (error) {
-        elizaLogger.warn("Error gathering conversation context:", error);
+        aiverseLogger.warn("Error gathering conversation context:", error);
     }
 
     return context;
@@ -89,7 +89,7 @@ export const cloudbetRulesInquiryAction: Action = {
                 return true;
             }
 
-            elizaLogger.info(
+            aiverseLogger.info(
                 `Processing inquiry about Cloudbet rules: ${query}`
             );
 
@@ -155,7 +155,7 @@ export const cloudbetRulesInquiryAction: Action = {
 
             return true;
         } catch (error: any) {
-            elizaLogger.error(
+            aiverseLogger.error(
                 "Error in Cloudbet rules inquiry handler:",
                 error
             );

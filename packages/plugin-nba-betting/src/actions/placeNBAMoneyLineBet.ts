@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { validateNBAMoneyLineBettingConfig } from "../environment";
 import { placeNBABetExamples } from "../examples";
 import { createNBABettingService } from "../services";
@@ -82,11 +82,11 @@ export const placeNBAMoneyLineBet: Action = {
             return false;
         }
 
-        elizaLogger.success(`========= Data from text input =========`);
-        elizaLogger.success(eventName);
-        elizaLogger.success(teamName);
-        elizaLogger.success(stake);
-        elizaLogger.success(`========= end =========`);
+        aiverseLogger.success(`========= Data from text input =========`);
+        aiverseLogger.success(eventName);
+        aiverseLogger.success(teamName);
+        aiverseLogger.success(stake);
+        aiverseLogger.success(`========= end =========`);
 
         let marketsData;
         try {
@@ -162,12 +162,14 @@ export const placeNBAMoneyLineBet: Action = {
         const side = selection.side as Side; // The side should be "BACK" based on examples
         const price = selection.price.toString();
 
-        elizaLogger.success(`========= Data passed in to place bet =========`);
-        elizaLogger.success(eventId);
-        elizaLogger.success(stake);
-        elizaLogger.success(outcome);
-        elizaLogger.success(price);
-        elizaLogger.success(`========= end =========`);
+        aiverseLogger.success(
+            `========= Data passed in to place bet =========`
+        );
+        aiverseLogger.success(eventId);
+        aiverseLogger.success(stake);
+        aiverseLogger.success(outcome);
+        aiverseLogger.success(price);
+        aiverseLogger.success(`========= end =========`);
 
         const data = await nbaService.placeBet(
             eventId,
@@ -175,11 +177,11 @@ export const placeNBAMoneyLineBet: Action = {
             outcome as Side,
             price
         );
-        elizaLogger.success(
+        aiverseLogger.success(
             `========== Returned value from placeBet ============`
         );
-        elizaLogger.success(JSON.stringify(data));
-        elizaLogger.success(`Successfully placed bet on ${teamName}`);
+        aiverseLogger.success(JSON.stringify(data));
+        aiverseLogger.success(`Successfully placed bet on ${teamName}`);
 
         const acceptedStake = data.stake;
         const acceptedPrice = data.price;
@@ -215,7 +217,7 @@ export const placeNBAMoneyLineBet: Action = {
             return true;
         }
 
-        elizaLogger.error("Error in NBA plugin handler:");
+        aiverseLogger.error("Error in NBA plugin handler:");
         callback({
             text: `Sorry. I am unable to take the bet for you. Please try again later.`,
         });

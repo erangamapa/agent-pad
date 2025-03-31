@@ -1,5 +1,5 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
@@ -8,7 +8,7 @@ import {
     State,
     generateText,
     ModelClass,
-} from "@elizaos/core";
+} from "@aiverse/core";
 
 /**
  * Loyalty benefits data as raw string for context
@@ -82,7 +82,7 @@ const getConversationContext = (
                 "Note: This appears to be a follow-up question. Consider previous context when answering.";
         }
     } catch (error) {
-        elizaLogger.warn("Error gathering conversation context:", error);
+        aiverseLogger.warn("Error gathering conversation context:", error);
     }
 
     return context;
@@ -97,7 +97,7 @@ const queryLoyaltyProgramWithLLM = async (
     conversationContext: string = ""
 ): Promise<string> => {
     try {
-        elizaLogger.info(`Querying loyalty program for: ${query}`);
+        aiverseLogger.info(`Querying loyalty program for: ${query}`);
 
         // Current user tier information (in a real implementation, this would be retrieved from a user profile)
         const userCurrentTier = "Gold";
@@ -157,7 +157,7 @@ STRICT RULES:
 
         return response;
     } catch (error) {
-        elizaLogger.error("Error querying loyalty program:", error);
+        aiverseLogger.error("Error querying loyalty program:", error);
         return "I'm having trouble accessing Cloudbet's loyalty program information right now. Please try again later or contact Cloudbet support directly.";
     }
 };
@@ -197,7 +197,7 @@ export const loyaltyProgramInquiryAction: Action = {
                 return true;
             }
 
-            elizaLogger.info(
+            aiverseLogger.info(
                 `Processing inquiry about Cloudbet loyalty program: ${query}`
             );
 
@@ -229,7 +229,7 @@ export const loyaltyProgramInquiryAction: Action = {
 
             return true;
         } catch (error: any) {
-            elizaLogger.error(
+            aiverseLogger.error(
                 "Error in Cloudbet loyalty program inquiry handler:",
                 error
             );

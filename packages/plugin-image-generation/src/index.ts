@@ -1,4 +1,4 @@
-import { elizaLogger, generateText } from "@elizaos/core";
+import { aiverseLogger, generateText } from "@aiverse/core";
 import {
     Action,
     HandlerCallback,
@@ -7,8 +7,8 @@ import {
     Plugin,
     State,
     ModelClass,
-} from "@elizaos/core";
-import { generateImage } from "@elizaos/core";
+} from "@aiverse/core";
+import { generateImage } from "@aiverse/core";
 import fs from "fs";
 import path from "path";
 import { validateImageGenConfig } from "./environment";
@@ -121,10 +121,10 @@ const imageGeneration: Action = {
         },
         callback: HandlerCallback
     ) => {
-        elizaLogger.log("Composing state for message:", message);
+        aiverseLogger.log("Composing state for message:", message);
         state = (await runtime.composeState(message)) as State;
         const userId = runtime.agentId;
-        elizaLogger.log("User ID:", userId);
+        aiverseLogger.log("User ID:", userId);
 
         const CONTENT = message.content.text;
         const IMAGE_SYSTEM_PROMPT = `You are an expert in writing prompts for AI art generation. You excel at creating detailed and creative visual descriptions. Incorporating specific elements naturally. Always aim for clear, descriptive language that generates a creative picture. Your output should only contain the description of the image contents, but NOT an instruction like "create an image that..."`;
@@ -181,13 +181,13 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
             customSystemPrompt: IMAGE_SYSTEM_PROMPT,
         });
 
-        elizaLogger.log("Image prompt received:", imagePrompt);
+        aiverseLogger.log("Image prompt received:", imagePrompt);
         const imageSettings = runtime.character?.settings?.imageSettings || {};
-        elizaLogger.log("Image settings:", imageSettings);
+        aiverseLogger.log("Image settings:", imageSettings);
 
         const res: { image: string; caption: string }[] = [];
 
-        elizaLogger.log("Generating image with prompt:", imagePrompt);
+        aiverseLogger.log("Generating image with prompt:", imagePrompt);
         const images = await generateImage(
             {
                 prompt: imagePrompt,
@@ -249,7 +249,7 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
         );
 
         if (images.success && images.data && images.data.length > 0) {
-            elizaLogger.log(
+            aiverseLogger.log(
                 "Image generation successful, number of images:",
                 images.data.length
             );
@@ -264,7 +264,7 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
                     ? await saveHeuristImage(image, filename)
                     : saveBase64Image(image, filename);
 
-                elizaLogger.log(`Processing image ${i + 1}:`, filename);
+                aiverseLogger.log(`Processing image ${i + 1}:`, filename);
 
                 //just dont even add a caption or a description just have it generate & send
                 /*
@@ -276,7 +276,7 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
                         captionTitle = caption.title;
                     }
                 } catch (error) {
-                    elizaLogger.error("Caption generation failed, using default caption:", error);
+                    aiverseLogger.error("Caption generation failed, using default caption:", error);
                 }*/
 
                 const _caption = "...";
@@ -289,7 +289,7 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
 
                 res.push({ image: filepath, caption: "..." }); //caption.title });
 
-                elizaLogger.log(
+                aiverseLogger.log(
                     `Generated caption for image ${i + 1}:`,
                     "..." //caption.title
                 );
@@ -319,7 +319,7 @@ Ensure that your prompt is detailed, vivid, and incorporates all the elements me
                 );
             }
         } else {
-            elizaLogger.error("Image generation failed or returned no data.");
+            aiverseLogger.error("Image generation failed or returned no data.");
         }
     },
     examples: [

@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { validateNBAMoneyLineBettingConfig } from "../environment";
 import { getNBAMoneyLineBettingMarketsExamples } from "../examples";
 import { createNBABettingService } from "../services";
@@ -151,7 +151,7 @@ export const getNBAMoneyLineMarketsAction: Action = {
                 .filter((item) => item.hasValidOdds)
                 .map((item) => item.formattedText);
 
-            elizaLogger.success(`Successfully fetched NBA Moneyline markets`);
+            aiverseLogger.success(`Successfully fetched NBA Moneyline markets`);
 
             if (callback) {
                 if (formattedEvents.length === 0) {
@@ -166,7 +166,7 @@ export const getNBAMoneyLineMarketsAction: Action = {
                 return true;
             }
         } catch (error: any) {
-            elizaLogger.error("Error in NBA plugin handler:", error);
+            aiverseLogger.error("Error in NBA plugin handler:", error);
             callback({
                 text: `I couldn't get the markets from cloudbet. Let's try again later.`,
             });

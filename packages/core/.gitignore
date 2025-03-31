@@ -1,5 +1,5 @@
 node_modules
 dist
-elizaConfig.yaml
+aiverseConfig.yaml
 custom_actions/
 cache/

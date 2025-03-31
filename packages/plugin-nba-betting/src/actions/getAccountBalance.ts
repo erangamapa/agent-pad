@@ -1,12 +1,12 @@
 import {
-    elizaLogger,
+    aiverseLogger,
     Action,
     ActionExample,
     HandlerCallback,
     IAgentRuntime,
     Memory,
     State,
-} from "@elizaos/core";
+} from "@aiverse/core";
 import { validateNBAMoneyLineBettingConfig } from "../environment";
 import { getAccountBalanceExamples } from "../examples";
 import { createNBABettingService } from "../services";
@@ -45,7 +45,7 @@ export const getAccountBalanceAction: Action = {
             const rawBalance = parseFloat(balanceData.amount);
             const formattedBalance = rawBalance.toFixed(2);
 
-            elizaLogger.success(
+            aiverseLogger.success(
                 `Successfully fetched account balance: ${formattedBalance} USDT`
             );
 
@@ -54,7 +54,7 @@ export const getAccountBalanceAction: Action = {
             });
             return true;
         } catch (error: any) {
-            elizaLogger.error("Error in account balance handler:", error);
+            aiverseLogger.error("Error in account balance handler:", error);
             callback({
                 text: "I'm having trouble retrieving your account balance right now. Please try again later.",
             });

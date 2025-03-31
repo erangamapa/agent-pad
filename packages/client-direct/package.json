@@ -1,5 +1,5 @@
 {
-    "name": "@elizaos/client-direct",
+    "name": "@aiverse/client-direct",
     "version": "0.1.8-alpha.1",
     "main": "dist/index.js",
     "module": "dist/index.js",
@@ -9,7 +9,7 @@
         "./package.json": "./package.json",
         ".": {
             "import": {
-                "@elizaos/source": "./src/index.ts",
+                "@aiverse/source": "./src/index.ts",
                 "types": "./dist/index.d.ts",
                 "default": "./dist/index.js"
             }
@@ -19,8 +19,8 @@
         "dist"
     ],
     "dependencies": {
-        "@elizaos/core": "workspace:*",
-        "@elizaos/plugin-image-generation": "workspace:*",
+        "@aiverse/core": "workspace:*",
+        "@aiverse/plugin-image-generation": "workspace:*",
         "@types/body-parser": "1.19.5",
         "@types/cors": "2.8.17",
         "@types/express": "5.0.0",

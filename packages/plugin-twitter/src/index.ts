@@ -1,4 +1,4 @@
-import { Plugin } from "@elizaos/core";
+import { Plugin } from "@aiverse/core";
 import { postAction } from "./actions/post";
 
 export const twitterPlugin: Plugin = {

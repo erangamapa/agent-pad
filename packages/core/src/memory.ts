@@ -1,5 +1,5 @@
 import { embed, getEmbeddingZeroVector } from "./embedding.ts";
-import elizaLogger from "./logger.ts";
+import aiverseLogger from "./logger.ts";
 import {
     IAgentRuntime,
     IMemoryManager,
@@ -68,7 +68,7 @@ export class MemoryManager implements IMemoryManager {
             // Generate embedding from text content
             memory.embedding = await embed(this.runtime, memoryText);
         } catch (error) {
-            elizaLogger.error("Failed to generate embedding:", error);
+            aiverseLogger.error("Failed to generate embedding:", error);
             // Fallback to zero vector if embedding fails
             memory.embedding = getEmbeddingZeroVector().slice();
         }
@@ -176,11 +176,11 @@ export class MemoryManager implements IMemoryManager {
             await this.runtime.databaseAdapter.getMemoryById(memory.id);
 
         if (existingMessage) {
-            elizaLogger.debug("Memory already exists, skipping");
+            aiverseLogger.debug("Memory already exists, skipping");
             return;
         }
 
-        elizaLogger.log("Creating Memory", memory.id, memory.content.text);
+        aiverseLogger.log("Creating Memory", memory.id, memory.content.text);
 
         await this.runtime.databaseAdapter.createMemory(
             memory,
@@ -189,12 +189,15 @@ export class MemoryManager implements IMemoryManager {
         );
     }
 
-    async getMemoriesByRoomIds(params: { roomIds: UUID[], limit?: number; }): Promise<Memory[]> {
+    async getMemoriesByRoomIds(params: {
+        roomIds: UUID[];
+        limit?: number;
+    }): Promise<Memory[]> {
         return await this.runtime.databaseAdapter.getMemoriesByRoomIds({
             tableName: this.tableName,
             agentId: this.runtime.agentId,
             roomIds: params.roomIds,
-            limit: params.limit
+            limit: params.limit,
         });
     }
 
