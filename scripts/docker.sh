@@ -30,14 +30,9 @@ case "$1" in
 
         # Define package directories to mount
         PACKAGES=(
-            "adapter-postgres"
             "adapter-sqlite"
             "adapter-sqljs"
-            "adapter-supabase"
-            "client-auto"
             "client-direct"
-            "client-discord"
-            "client-farcaster"
             "client-telegram"
             "client-twitter"
             "core"

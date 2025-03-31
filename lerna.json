@@ -1,11 +1,5 @@
 {
     "version": "0.1.8-alpha.1",
-    "packages": [
-        "packages/*",
-        "docs",
-        "agent",
-        "client",
-        "!packages/_examples"
-    ],
+    "packages": ["packages/*", "docs", "agent", "client"],
     "npmClient": "pnpm"
 }

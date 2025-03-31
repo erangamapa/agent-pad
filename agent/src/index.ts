@@ -1,10 +1,5 @@
 import { SqliteDatabaseAdapter } from "@elizaos/adapter-sqlite";
 import { RedisClient } from "@elizaos/adapter-redis";
-import { AutoClientInterface } from "@elizaos/client-auto";
-import { DiscordClientInterface } from "@elizaos/client-discord";
-import { FarcasterAgentClient } from "@elizaos/client-farcaster";
-import { LensAgentClient } from "@elizaos/client-lens";
-import { SlackClientInterface } from "@elizaos/client-slack";
 import { TelegramClientInterface } from "@elizaos/client-telegram";
 import { TwitterClientInterface } from "@elizaos/client-twitter";
 
@@ -444,16 +439,6 @@ export async function initializeClients(
         character.clients?.map((str) => str.toLowerCase()) || [];
     elizaLogger.log("initializeClients", clientTypes, "for", character.name);
 
-    if (clientTypes.includes(Clients.AUTO)) {
-        const autoClient = await AutoClientInterface.start(runtime);
-        if (autoClient) clients.auto = autoClient;
-    }
-
-    if (clientTypes.includes(Clients.DISCORD)) {
-        const discordClient = await DiscordClientInterface.start(runtime);
-        if (discordClient) clients.discord = discordClient;
-    }
-
     if (clientTypes.includes(Clients.TELEGRAM)) {
         const telegramClient = await TelegramClientInterface.start(runtime);
         if (telegramClient) clients.telegram = telegramClient;
@@ -466,26 +451,7 @@ export async function initializeClients(
         }
     }
 
-    if (clientTypes.includes(Clients.FARCASTER)) {
-        const farcasterClient = new FarcasterAgentClient(runtime);
-        if (farcasterClient) {
-            farcasterClient.start();
-            clients.farcaster = farcasterClient;
-        }
-    }
-
-    if (clientTypes.includes("lens")) {
-        const lensClient = new LensAgentClient(runtime);
-        lensClient.start();
-        clients.lens = lensClient;
-    }
-
     elizaLogger.log("client keys", Object.keys(clients));
-
-    if (clientTypes.includes("slack")) {
-        const slackClient = await SlackClientInterface.start(runtime);
-        if (slackClient) clients.slack = slackClient;
-    }
 
     function determineClientType(client: Client): string {
         if ("type" in client) {
