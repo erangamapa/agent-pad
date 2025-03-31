@@ -1,8 +1,5 @@
-import { PGLiteDatabaseAdapter } from "@elizaos/adapter-pglite";
-import { PostgresDatabaseAdapter } from "@elizaos/adapter-postgres";
-import { RedisClient } from "@elizaos/adapter-redis";
 import { SqliteDatabaseAdapter } from "@elizaos/adapter-sqlite";
-import { SupabaseDatabaseAdapter } from "@elizaos/adapter-supabase";
+import { RedisClient } from "@elizaos/adapter-redis";
 import { AutoClientInterface } from "@elizaos/client-auto";
 import { DiscordClientInterface } from "@elizaos/client-discord";
 import { FarcasterAgentClient } from "@elizaos/client-farcaster";
@@ -422,66 +419,20 @@ export function getTokenForProvider(
 }
 
 function initializeDatabase(dataDir: string) {
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
-        elizaLogger.info("Initializing Supabase connection...");
-        const db = new SupabaseDatabaseAdapter(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_ANON_KEY
-        );
+    const filePath =
+        process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
+    elizaLogger.info(`Initializing SQLite database at ${filePath}...`);
+    const db = new SqliteDatabaseAdapter(new Database(filePath));
 
-        db.init()
-            .then(() => {
-                elizaLogger.success(
-                    "Successfully connected to Supabase database"
-                );
-            })
-            .catch((error) => {
-                elizaLogger.error("Failed to connect to Supabase:", error);
-            });
-
-        return db;
-    } else if (process.env.POSTGRES_URL) {
-        elizaLogger.info("Initializing PostgreSQL connection...");
-        const db = new PostgresDatabaseAdapter({
-            connectionString: process.env.POSTGRES_URL,
-            parseInputs: true,
+    db.init()
+        .then(() => {
+            elizaLogger.success("Successfully connected to SQLite database");
+        })
+        .catch((error) => {
+            elizaLogger.error("Failed to connect to SQLite:", error);
         });
 
-        db.init()
-            .then(() => {
-                elizaLogger.success(
-                    "Successfully connected to PostgreSQL database"
-                );
-            })
-            .catch((error) => {
-                elizaLogger.error("Failed to connect to PostgreSQL:", error);
-            });
-
-        return db;
-    } else if (process.env.PGLITE_DATA_DIR) {
-        elizaLogger.info("Initializing PgLite adapter...");
-        const db = new PGLiteDatabaseAdapter({
-            dataDir: process.env.PGLITE_DATA_DIR,
-        });
-        return db;
-    } else {
-        const filePath =
-            process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
-        elizaLogger.info(`Initializing SQLite database at ${filePath}...`);
-        const db = new SqliteDatabaseAdapter(new Database(filePath));
-
-        db.init()
-            .then(() => {
-                elizaLogger.success(
-                    "Successfully connected to SQLite database"
-                );
-            })
-            .catch((error) => {
-                elizaLogger.error("Failed to connect to SQLite:", error);
-            });
-
-        return db;
-    }
+    return db;
 }
 
 export async function initializeClients(
